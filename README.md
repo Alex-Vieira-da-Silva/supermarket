@@ -61,31 +61,6 @@ O ambiente é orquestrado com **Docker Compose**, contendo:
 
 ---
 
-# 🛒 Supermarket API
-
-![Java](https://img.shields.io/badge/Java-17-007396?style=for-the-badge)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge)
-![AWS EC2](https://img.shields.io/badge/AWS-EC2-FF9900?style=for-the-badge)
-![License](https://img.shields.io/badge/License-Free-blue?style=for-the-badge)
-
-A **Supermarket API** é uma aplicação REST desenvolvida para gerenciar produtos de supermercado de forma simples, rápida e escalável.  
-Construída com **Spring Boot**, integrada a um banco **MySQL**, conteinerizada com **Docker** e preparada para ambiente de produção com deploy em **AWS EC2**.
-
----
-
-## 🧩 Principais Recursos
-
-- CRUD completo de produtos  
-- Persistência com Spring Data JPA  
-- Banco MySQL rodando em container Docker  
-- Healthcheck com Spring Actuator  
-- Deploy automatizado via Docker Compose  
-- Arquitetura limpa e escalável  
-
----
-
 
 
 
