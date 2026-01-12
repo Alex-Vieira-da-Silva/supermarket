@@ -2,14 +2,26 @@ version: "3.9"
 
 services:
   supermarket:
-    image: supermarket
-    container_name: supermarket
     build: .
+    container_name: supermarket
     ports:
       - "8080:8080"
-    restart: always
+    environment:
+      - SERVER_ADDRESS=0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/share/nginx/html:ro
+    depends_on:
+      supermarket:
+        condition: service_healthy

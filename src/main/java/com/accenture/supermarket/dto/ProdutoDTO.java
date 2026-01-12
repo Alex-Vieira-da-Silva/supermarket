@@ -4,7 +4,9 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class ProdutoRequestDTO {
+public class ProdutoDTO {
+
+    private Long id;
 
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
@@ -16,4 +18,14 @@ public class ProdutoRequestDTO {
     @NotNull(message = "A quantidade é obrigatória")
     @PositiveOrZero(message = "A quantidade não pode ser negativa")
     private Integer quantidade;
+
+    public ProdutoDTO(Long id, String nome, Double preco, Integer quantidade) {
+        this.id = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.quantidade = quantidade;
+    }
+
+    public ProdutoDTO() {
+    }
 }

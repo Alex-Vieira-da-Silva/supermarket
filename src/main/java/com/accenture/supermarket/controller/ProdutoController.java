@@ -1,11 +1,12 @@
 package com.accenture.supermarket.controller;
 
-import com.accenture.supermarket.dto.ProdutoRequestDTO;
-import com.accenture.supermarket.dto.ProdutoResponseDTO;
+import com.accenture.supermarket.dto.ProdutoDTO;
 import com.accenture.supermarket.service.ProdutoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,22 +20,22 @@ public class ProdutoController {
     private final ProdutoService service;
 
     @GetMapping
-    public List<ProdutoResponseDTO> listarTodos() {
+    public List<ProdutoDTO> listarTodos() {
         return service.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public ProdutoResponseDTO buscarPorId(@PathVariable Long id) {
+    public ProdutoDTO buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
     @PostMapping
-    public ProdutoResponseDTO criar(@Valid @RequestBody ProdutoRequestDTO dto) {
+    public ProdutoDTO criar(@Valid @RequestBody ProdutoDTO dto) {
         return service.criar(dto);
     }
 
     @PutMapping("/{id}")
-    public ProdutoResponseDTO atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequestDTO dto) {
+    public ProdutoDTO atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoDTO dto) {
         return service.atualizar(id, dto);
     }
 
