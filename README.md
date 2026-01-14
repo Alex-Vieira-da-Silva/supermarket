@@ -1,16 +1,23 @@
-# Supermarket – Arquitetura em AWS com Docker e EC2
+# 🛒 Supermarket – Arquitetura em AWS com Docker, EC2 e Load Balancer
 
-Este projeto implementa uma aplicação **Spring Boot** executando em um ambiente **AWS altamente disponível**, utilizando **EC2**, **Docker**, **Docker Compose** e um **Load Balancer com NGINX**.
+Este projeto implementa uma aplicação **Spring Boot** executando em um ambiente **AWS altamente disponível**, utilizando:
 
-A solução foi construída para ser simples, escalável e fácil de manter.
+- **EC2**
+- **Docker**
+- **Docker Compose**
+- **NGINX como Load Balancer**
+- **MySQL em container**
+- **Deploy automatizado via SSH**
+
+A solução foi construída para ser **simples, escalável e fácil de manter**, ideal para portfólio profissional.
 
 ---
 
-## 🚀 Arquitetura do Projeto
+## 🚀 Arquitetura Geral do Projeto
 
 A aplicação roda em **duas instâncias EC2**, cada uma executando um container Docker com o serviço Spring Boot.  
-Um servidor adicional EC2 atua como **Load Balancer** utilizando NGINX.  
-O banco de dados MySQL também está em uma instância EC2, executando dentro de um container Docker.
+Uma terceira instância EC2 atua como **Load Balancer** utilizando NGINX.  
+O banco de dados MySQL também está em uma instância EC2, rodando em container.
 
 ---
 
@@ -31,10 +38,32 @@ Cada instância contém:
 - Healthcheck via `/actuator/health`
 
 ### **3. Banco de Dados**
-- MySQL rodando localmente na EC2
-- Acesso interno pelo container
+- MySQL rodando em container
+- Acesso interno pela aplicação
+- Isolado em instância própria
 
 ---
+
+## 🗂️ Estrutura do Projeto
+
+```text
+supermarket/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   └── test/
+├── deploy.sh
+├── docker-compose.yml
+├── Dockerfile
+├── nginx.conf
+├── pom.xml
+├── mvnw / mvnw.cmd
+├── .gitignore
+├── .gitattributes
+└── README.md
+---
+```
 
 ## 🌐 Endpoints 
 
