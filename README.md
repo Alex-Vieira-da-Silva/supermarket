@@ -64,6 +64,110 @@ supermarket/
 └── README.md
 ---
 ```
+## ☁️ Arquitetura Completa (AWS + Docker + API)
+
+flowchart TB
+
+    U[🧑‍💻 Usuários / Postman / Frontend] --> LB{{🔀 Load Balancer (NGINX)}}
+
+    LB --> EC1[🖥️ EC2-APP-JAVA-1<br>Docker + Spring Boot]
+    LB --> EC2[🖥️ EC2-APP-JAVA-2<br>Docker + Spring Boot]
+
+    subgraph EC2_1[EC2-APP-JAVA-1]
+        D1[🐳 Docker Engine]
+        C1[📦 Docker Compose]
+        API1[🚀 Spring Boot API]
+    end
+
+    subgraph EC2_2[EC2-APP-JAVA-2]
+        D2[🐳 Docker Engine]
+        C2[📦 Docker Compose]
+        API2[🚀 Spring Boot API]
+    end
+
+    EC1 --> D1 --> C1 --> API1
+    EC2 --> D2 --> C2 --> API2
+
+    DB[(🗄️ Banco de Dados MySQL)]
+    API1 --> DB
+    API2 --> DB
+
+    subgraph DEV[💻 Ambiente do Desenvolvedor]
+        DEV1[🧑‍💻 Git Bash / IntelliJ]
+        SH[📜 deploy.sh]
+    end
+
+    DEV1 --> SH
+    SH -->|SSH + SCP| EC1
+    SH -->|SSH + SCP| EC2
+
+---
+
+## 🏗️ Arquitetura com VPC, Subnets e Security Groups
+
+flowchart TB
+
+    subgraph AWS[AWS Cloud ☁️]
+        
+        subgraph VPC[VPC - Rede Privada]
+            
+            subgraph PUB[Subnet Pública 🌐]
+                EC1[EC2-APP-JAVA-1<br>SG: app-sg]
+                EC2[EC2-APP-JAVA-2<br>SG: app-sg]
+                LB[Load Balancer (NGINX)<br>SG: lb-sg]
+            end
+
+            subgraph PRIV[Subnet Privada 🔒]
+                DB[(MySQL<br>SG: db-sg)]
+            end
+
+        end
+    end
+
+    LB --> EC1
+    LB --> EC2
+
+    EC1 --> DB
+    EC2 --> DB
+
+---
+
+## 🔄 Fluxo de Deploy
+
+sequenceDiagram
+participant Dev as Desenvolvedor
+participant Local as Máquina Local
+participant EC1 as EC2-APP-JAVA-1
+participant EC2 as EC2-APP-JAVA-2
+
+    Dev->>Local: Executa ./deploy.sh
+    Local->>Local: mvn clean package
+    Local->>EC1: Envia JAR + Dockerfile + docker-compose.yml (SCP)
+    Local->>EC2: Envia JAR + Dockerfile + docker-compose.yml (SCP)
+
+    Local->>EC1: docker-compose down && up -d --build
+    Local->>EC2: docker-compose down && up -d --build
+
+    EC1->>Dev: Aplicação rodando (healthy)
+    EC2->>Dev: Aplicação rodando (healthy)
+
+---
+
+## 🧠 Fluxo Interno da API (Controller → Service → Repository)
+
+flowchart TD
+
+    A[Cliente / Postman] --> B[Controller]
+    B --> C[Service]
+    C --> D[Repository]
+    D --> E[(Banco de Dados)]
+
+    E --> D
+    D --> C
+    C --> B
+    B --> A
+
+---
 
 ## 🌐 Endpoints 
 
