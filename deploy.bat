@@ -1,33 +1,32 @@
 @echo off
 echo ============================================
-echo  INICIANDO DEPLOY PARA EC2-APP
+echo INICIANDO DEPLOY NAS DUAS EC2
 echo ============================================
 
-echo.
-echo 🔨 Compilando projeto...
+set KEY="C:\Users\alexv\Downloads\Projeto\Projeto no Intellij\Key_Projeto.pem"
+set EC2_1=ec2-user@34.234.225.183
+set EC2_2=ec2-user@54.221.12.29
+
+echo Compilando projeto...
 mvn clean package -DskipTests
 
-echo.
-echo 📦 Enviando JAR para EC2...
-scp -i "C:\Users\alexv\Downloads\Projeto\Projeto no IntelliJ\Key_Projeto.pem" ^
-target\supermarket-0.0.1-SNAPSHOT.jar ^
-ec2-user@34.234.225.183:/home/ec2-user/
+echo Enviando arquivos para EC2-APP-JAVA-1...
+scp -i %KEY% target\supermarket-0.0.1-SNAPSHOT.jar %EC2_1%:/home/ec2-user/supermarket/
+scp -i %KEY% Dockerfile %EC2_1%:/home/ec2-user/supermarket/
+scp -i %KEY% docker-compose.yml %EC2_1%:/home/ec2-user/supermarket/
 
-echo.
-echo 📄 Enviando Dockerfile para EC2...
-scp -i "C:\Users\alexv\Downloads\Projeto\Projeto no IntelliJ\Key_Projeto.pem" ^
-Dockerfile ^
-ec2-user@34.234.225.183:/home/ec2-user/
+echo Atualizando container na EC2-APP-JAVA-1...
+ssh -i %KEY% %EC2_1% "cd supermarket; docker-compose down; docker-compose up -d --build"
 
-echo.
-echo 🚀 Conectando na EC2 para atualizar container...
-ssh -i "C:\Users\alexv\Downloads\Projeto\Projeto no IntelliJ\Key_Projeto.pem" ec2-user@34.234.225.183 ^
-"docker rm -f supermarket 2>/dev/null; \
- docker build -t supermarket .; \
- docker run -d -p 8080:8080 --restart always --name supermarket supermarket"
+echo Enviando arquivos para EC2-APP-JAVA-2...
+scp -i %KEY% target\supermarket-0.0.1-SNAPSHOT.jar %EC2_2%:/home/ec2-user/supermarket/
+scp -i %KEY% Dockerfile %EC2_2%:/home/ec2-user/supermarket/
+scp -i %KEY% docker-compose.yml %EC2_2%:/home/ec2-user/supermarket/
 
-echo.
+echo Atualizando container na EC2-APP-JAVA-2...
+ssh -i %KEY% %EC2_2% "cd supermarket; docker-compose down; docker-compose up -d --build"
+
 echo ============================================
-echo  DEPLOY FINALIZADO COM SUCESSO
+echo DEPLOY FINALIZADO NAS DUAS INSTANCIAS
 echo ============================================
 pause

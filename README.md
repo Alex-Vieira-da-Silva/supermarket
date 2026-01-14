@@ -1,70 +1,103 @@
-# 🛒 Supermarket API
+# Supermarket – Arquitetura em AWS com Docker e EC2
 
-A **Supermarket API** é uma aplicação REST desenvolvida para gerenciar produtos de supermercado de forma simples, rápida e escalável.  
-Construída com **Spring Boot**, integrada a um banco **MySQL**, conteinerizada com **Docker** e preparada para ambiente de produção com deploy em **AWS EC2**, ela oferece uma base sólida para estudos, testes ou evolução para um sistema real.
+Este projeto implementa uma aplicação **Spring Boot** executando em um ambiente **AWS altamente disponível**, utilizando **EC2**, **Docker**, **Docker Compose** e um **Load Balancer com NGINX**.
 
-Esta API permite realizar operações completas de CRUD (Create, Read, Update, Delete) de produtos, além de fornecer endpoints de monitoramento via **Spring Actuator**, garantindo observabilidade e saúde da aplicação em produção.
-
----
-
-## 🚀 Objetivos do Projeto
-
-- Demonstrar uma arquitetura moderna utilizando **Java + Spring Boot**  
-- Aplicar boas práticas de desenvolvimento backend  
-- Utilizar **Docker** para padronizar ambiente e facilitar deploy  
-- Integrar com banco de dados relacional **MySQL**  
-- Realizar deploy em ambiente real na **AWS EC2**  
-- Servir como base para estudos, testes e evolução para sistemas maiores  
+A solução foi construída para ser simples, escalável e fácil de manter.
 
 ---
 
-## 🧩 Principais Recursos
+## 🚀 Arquitetura Geral
 
-- API REST completa para gerenciamento de produtos  
-- Persistência com Spring Data JPA  
-- Banco de dados MySQL rodando em container Docker  
-- Healthcheck com Spring Actuator  
-- Deploy automatizado via Docker Compose  
-- Estrutura limpa e organizada seguindo boas práticas  
-- Fácil escalabilidade e manutenção  
+A aplicação roda em **duas instâncias EC2**, cada uma executando um container Docker com o serviço Spring Boot.  
+Um servidor adicional EC2 atua como **Load Balancer** utilizando NGINX.
+
+Abaixo está o diagrama completo da arquitetura:
+
+┌─────────────────────────────────────────────────────────────────┐
+│                                vpc-projeto                      │
+│                                                                 │
+│   ┌──────────────────────────────┐                              │
+│   │            Client            │                              │
+│   └───────────────┬──────────────┘                              │
+│                   │ HTTP/HTTPS                                  │
+│                   ▼                                             │
+│   ┌──────────────────────────────────────────┐                  │
+│   │              EC2-LB (NGINX)              │                  │
+│   │              SG-LB (Security Group)      │                  │
+│   └───────────────┬──────────────────────────┘                  │
+│                   │ Balanceamento Round-Robin                   │
+│   ┌───────────────┼───────────────────────────────┬             │
+│   │                                               │             │
+│   ▼                                               ▼             │
+│ ┌──────────────────────────┐       ┌──────────────────────────┐ │
+│ │      EC2-APP-JAVA-1      │       │      EC2-APP-JAVA-2      │ │
+│ │  SG-APP                  │       │  SG-APP                  │ │
+│ │  Docker + Spring Boot    │       │  Docker + Spring Boot    │ │
+│ │  Porta 8080              │       │  Porta 8080              │ │
+│ └──────────────┬───────────┘       └──────────────┬───────────┘ │
+│                │                                  │             │
+│                └──────────────────────┬───────────┘             │
+│                                       │                         │
+│                                       ▼                         │
+│                         ┌──────────────────────────┐            │
+│                         │        EC2-DB (MySQL)    │            │
+│                         │        SG-DB             │            │
+│                         │        Docker Container  │            │
+│                         └──────────────────────────┘            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+
+
 
 ---
 
-## 🏗️ Arquitetura da Solução
+## 🏗️ Componentes da Arquitetura
 
-A aplicação segue uma arquitetura simples e eficiente:
+### **1. Load Balancer (EC2 + NGINX)**
+- Recebe todo o tráfego externo
+- Distribui requisições entre as duas instâncias de aplicação
+- Estratégia: **Round Robin**
+- Pode ser expandido para HTTPS com Certbot
 
-- **Controller** → recebe requisições HTTP  
-- **Service** → contém regras de negócio  
-- **Repository** → comunicação com o banco via JPA  
-- **Model** → entidades persistidas no MySQL  
+### **2. EC2-APP-JAVA-1 e EC2-APP-JAVA-2**
+Cada instância contém:
+- Docker Engine
+- Docker Compose
+- Container Spring Boot
+- Porta exposta: **8080**
+- Healthcheck via `/actuator/health`
 
-O ambiente é orquestrado com **Docker Compose**, contendo:
-
-- Container da aplicação Spring Boot  
-- Container do MySQL  
-- Healthcheck automático  
-- Restart automático em caso de falhas  
-
----
-
-## 🌐 Tecnologias Utilizadas
-
-- **Java 17**  
-- **Spring Boot 3+**  
-- **Spring Web**  
-- **Spring Data JPA**  
-- **Spring Actuator**  
-- **MySQL 8**  
-- **Docker & Docker Compose**  
-- **AWS EC2 (Amazon Linux 2023)**  
+### **3. Banco de Dados**
+- MySQL rodando localmente na EC2
+- Acesso interno pelo container
 
 ---
 
+## 🌐 Endpoints 
 
+- http://44.198.61.152/swagger-ui/index.html
 
+---
+## Healthcheck
 
+- http://44.198.61.152/actuator/health
 
+---
 
+## 🐳 Docker
 
+### **docker-compose.yml**
+O projeto utiliza Docker Compose para subir o container da aplicação:
 
+```yaml
+version: '3.8'
+
+services:
+  supermarket:
+    image: supermarket:latest
+    container_name: supermarket
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
