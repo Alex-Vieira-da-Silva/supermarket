@@ -6,9 +6,7 @@ A solução foi construída para ser simples, escalável e fácil de manter.
 
 ---
 
-## 🚀 Arquitetura Geral
-
-## Arquitetura do Projeto
+## 🚀 Arquitetura do Projeto
 
 A aplicação roda em **duas instâncias EC2**, cada uma executando um container Docker com o serviço Spring Boot.  
 Um servidor adicional EC2 atua como **Load Balancer** utilizando NGINX.  
