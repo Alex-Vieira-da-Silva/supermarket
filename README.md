@@ -134,12 +134,6 @@ flowchart TB
 
 ## 🔄 Fluxo de Deploy
 
-sequenceDiagram
-participant Dev as Desenvolvedor
-participant Local as Máquina Local
-participant EC1 as EC2-APP-JAVA-1
-participant EC2 as EC2-APP-JAVA-2
-
     Dev->>Local: Executa ./deploy.sh
     Local->>Local: mvn clean package
     Local->>EC1: Envia JAR + Dockerfile + docker-compose.yml (SCP)
