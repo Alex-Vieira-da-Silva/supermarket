@@ -41,7 +41,7 @@ Cada instância contém:
 - http://44.198.61.152/swagger-ui/index.html
 
 ---
-## Healthcheck
+## 📈 Healthcheck
 
 - http://44.198.61.152/actuator/health
 
