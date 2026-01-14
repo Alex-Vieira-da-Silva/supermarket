@@ -14,32 +14,6 @@ A aplicação roda em **duas instâncias EC2**, cada uma executando um container
 Um servidor adicional EC2 atua como **Load Balancer** utilizando NGINX.  
 O banco de dados MySQL também está em uma instância EC2, executando dentro de um container Docker.
 
-
-Abaixo está o diagrama completo da arquitetura:
-
-vpc-projeto
-│
-├── Client
-│   └── HTTP/HTTPS
-│
-├── EC2-LB (NGINX)
-│   └── SG-LB (Security Group)
-│   └── Balanceamento Round-Robin
-│
-├── EC2-APP-JAVA-1
-│   └── SG-APP
-│   └── Docker + Spring Boot
-│   └── Porta 8080
-│
-├── EC2-APP-JAVA-2
-│   └── SG-APP
-│   └── Docker + Spring Boot
-│   └── Porta 8080
-│
-└── EC2-DB (MySQL)
-└── SG-DB
-└── Docker Container
-
 ---
 
 ## 🏗️ Componentes da Arquitetura
