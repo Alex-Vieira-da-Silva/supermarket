@@ -163,17 +163,6 @@ flowchart TD
 
 ---
 
-## 🌐 Endpoints 
-
-- http://44.198.61.152/swagger-ui/index.html
-
----
-## 📈 Healthcheck
-
-- http://44.198.61.152/actuator/health
-
----
-
 ## 🐳 Docker
 
 ### **docker-compose.yml**
@@ -190,3 +179,16 @@ services:
     ports:
       - "8080:8080"
     restart: always
+```
+---
+
+## 🌐 Endpoints 
+
+- http://44.198.61.152/swagger-ui/index.html
+
+---
+## 📈 Healthcheck
+
+- http://44.198.61.152/actuator/health
+
+---
