@@ -1,6 +1,6 @@
 # 🛒 Supermarket – Arquitetura AWS com Docker, EC2 e Load Balancer
 
-Este projeto implementa uma aplicação **Spring Boot** rodando em um ambiente **AWS altamente disponível**, utilizando containers Docker para garantir consistência entre os ambientes de desenvolvimento e produção.
+Este projeto implementa uma aplicação **Spring Boot** rodando em um ambiente **AWS altamente disponível**, utilizando containers Docker para garantir consistência entre os ambientes de desenvolvimento e produção. A API oferece um **CRUD completo** (Create, Read, Update, Delete) para o gerenciamento de produtos do supermercado.
 
 ---
 
