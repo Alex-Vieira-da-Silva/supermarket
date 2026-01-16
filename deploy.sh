@@ -1,32 +1,80 @@
 #!/bin/bash
 
 echo "============================================"
-echo " INICIANDO DEPLOY NAS DUAS EC2"
+echo " INICIANDO DEPLOY COMPLETO (DB + APP + LB)"
 echo "============================================"
 
-KEY="/c/Users/alexv/Downloads/Projeto/Projeto no Intellij/Key_Projeto.pem"
-EC2_1="ec2-user@100.48.214.158"
-EC2_2="ec2-user@100.52.182.18"
+KEY="/home/ec2-user/Key_Projeto.pem"
 
-echo "Compilando projeto..."
-mvn clean package -DskipTests
+EC2_DB="ec2-user@10.0.143.61"
+EC2_APP1="ec2-user@10.0.141.223"
+EC2_APP2="ec2-user@10.0.134.49"
+EC2_LB="ec2-user@10.0.6.79"
 
-echo "Enviando arquivos para EC2-APP-JAVA-1..."
-scp -i "$KEY" target/supermarket-0.0.1-SNAPSHOT.jar $EC2_1:/home/ec2-user/supermarket/
-scp -i "$KEY" Dockerfile $EC2_1:/home/ec2-user/supermarket/
-scp -i "$KEY" docker-compose.yml $EC2_1:/home/ec2-user/supermarket/
-
-echo "Atualizando container na EC2-APP-JAVA-1..."
-ssh -i "$KEY" $EC2_1 "cd supermarket && docker-compose down && docker-compose up -d --build"
-
-echo "Enviando arquivos para EC2-APP-JAVA-2..."
-scp -i "$KEY" target/supermarket-0.0.1-SNAPSHOT.jar $EC2_2:/home/ec2-user/supermarket/
-scp -i "$KEY" Dockerfile $EC2_2:/home/ec2-user/supermarket/
-scp -i "$KEY" docker-compose.yml $EC2_2:/home/ec2-user/supermarket/
-
-echo "Atualizando container na EC2-APP-JAVA-2..."
-ssh -i "$KEY" $EC2_2 "cd supermarket && docker-compose down && docker-compose up -d --build"
+DIR_DB="/home/ec2-user/mysql"
+DIR_APP="/home/ec2-user/supermarket"
+DIR_LB="/home/ec2-user/nginx"
 
 echo "============================================"
-echo " DEPLOY FINALIZADO NAS DUAS INSTANCIAS"
+echo " CRIANDO DIRETÓRIOS REMOTOS"
+echo "============================================"
+
+ssh -i "$KEY" $EC2_DB "mkdir -p $DIR_DB"
+ssh -i "$KEY" $EC2_APP1 "mkdir -p $DIR_APP"
+ssh -i "$KEY" $EC2_APP2 "mkdir -p $DIR_APP"
+ssh -i "$KEY" $EC2_LB "mkdir -p $DIR_LB"
+
+echo "============================================"
+echo " ENVIANDO docker-compose-db.yml PARA EC2-DB"
+echo "============================================"
+
+scp -i "$KEY" docker-compose-db.yml $EC2_DB:$DIR_DB/
+
+ssh -i "$KEY" $EC2_DB "
+    cd $DIR_DB &&
+    docker-compose down || true &&
+    docker-compose up -d
+"
+
+echo "============================================"
+echo " ENVIANDO ARQUIVOS PARA EC2-APP-JAVA-1"
+echo "============================================"
+
+scp -i "$KEY" supermarket-0.0.1-SNAPSHOT.jar $EC2_APP1:$DIR_APP/
+scp -i "$KEY" Dockerfile $EC2_APP1:$DIR_APP/
+scp -i "$KEY" docker-compose-app.yml $EC2_APP1:$DIR_APP/docker-compose.yml
+
+ssh -i "$KEY" $EC2_APP1 "
+    cd $DIR_APP &&
+    docker-compose down || true &&
+    docker-compose up -d --build
+"
+
+echo "============================================"
+echo " ENVIANDO ARQUIVOS PARA EC2-APP-JAVA-2"
+echo "============================================"
+
+scp -i "$KEY" supermarket-0.0.1-SNAPSHOT.jar $EC2_APP2:$DIR_APP/
+scp -i "$KEY" Dockerfile $EC2_APP2:$DIR_APP/
+scp -i "$KEY" docker-compose-app.yml $EC2_APP2:$DIR_APP/docker-compose.yml
+
+ssh -i "$KEY" $EC2_APP2 "
+    cd $DIR_APP &&
+    docker-compose down || true &&
+    docker-compose up -d --build
+"
+
+echo "============================================"
+echo " ENVIANDO nginx.conf PARA EC2-LB"
+echo "============================================"
+
+scp -i "$KEY" nginx.conf $EC2_LB:$DIR_LB/
+
+ssh -i "$KEY" $EC2_LB "
+    sudo cp $DIR_LB/nginx.conf /etc/nginx/nginx.conf &&
+    sudo systemctl restart nginx
+"
+
+echo "============================================"
+echo " DEPLOY COMPLETO FINALIZADO COM SUCESSO"
 echo "============================================"
