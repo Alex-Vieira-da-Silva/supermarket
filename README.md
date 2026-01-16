@@ -6,9 +6,9 @@ Este projeto implementa uma aplicação **Spring Boot** rodando em um ambiente *
 
 ## 🏗️ Arquitetura do Sistema
 
-Abaixo, o diagrama técnico que detalha a infraestrutura na nuvem conforme implementado:
+A infraestrutura foi desenhada para separar as responsabilidades de rede, aplicação e dados, garantindo alta disponibilidade e isolamento.
 
-![Arquitetura da Aplicação](./img/Diagrama%20da%20aplicação.jpg)
+
 
 ### **Componentes da Infraestrutura:**
 
@@ -43,9 +43,9 @@ O processo de deploy é realizado através de um script Bash automatizado:
 
 ## 🛣️ Endpoints Principais
 
-| Recurso | URL |
-| :--- | :--- |
-| **Documentação API (Swagger)** | [http://3.228.6.162/swagger-ui/index.html#/](http://3.228.6.162/swagger-ui/index.html#/) |
+| Recurso                    | URL |
+|:---------------------------| :--- |
+| **Link da API na AWS**     | [http://3.228.6.162/swagger-ui/index.html#/](http://3.228.6.162/swagger-ui/index.html#/) |
 | **Healthcheck (Actuator)** | [http://3.228.6.162/actuator/health](http://3.228.6.162/actuator/health) |
 
 ---
@@ -72,10 +72,14 @@ Se desejar rodar o ambiente completo em sua máquina:
 
 ```text
 supermarket/
-├── img/                # Diagramas e prints do projeto
-├── src/                # Código fonte (Spring Boot)
-├── deploy.sh           # Automação de deploy (SCP/SSH)
-├── docker-compose.yml  # Orquestração de containers
-├── Dockerfile          # Definição da imagem da aplicação
-├── nginx.conf          # Configuração do Load Balancer
-└── pom.xml             # Gerenciador de dependências Maven
+├── src/                        # Código-fonte Java (Spring Boot)
+├── target/                     # Binários gerados após o build (Maven)
+├── deploy.sh                   # Script de automação de deploy (SCP/SSH)
+├── docker-compose.yml          # Orquestração principal (Geral)
+├── docker-compose-app.yml      # Configuração específica do container da API
+├── docker-compose-db.yml       # Configuração específica do banco de dados
+├── Dockerfile                  # Receita para build da imagem da aplicação
+├── nginx.conf                  # Configuração do Load Balancer
+├── pom.xml                     # Gerenciador de dependências Maven
+├── mvnw / mvnw.cmd             # Wrapper do Maven
+└── README.md                   # Documentação do projeto
