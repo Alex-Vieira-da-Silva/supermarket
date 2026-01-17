@@ -20,19 +20,6 @@ A infraestrutura foi desenhada para separar as responsabilidades de rede, aplica
 
 ---
 
-## 🔄 Zero downtime entre APP‑1 e APP‑2
-
-* APP‑1 atualiza
-
-* APP‑2 continua atendendo
-
-* LB distribui tráfego
-
-* Depois APP‑2 atualiza
-
-Isso é blue/green deployment na prática.
-
----
 ## 🚀 Tecnologias Utilizadas
 
 * **Cloud:** AWS (EC2, VPC, Security Groups, Internet Gateway).
@@ -51,6 +38,20 @@ O processo de deploy é realizado através de um script Bash automatizado:
 1.  **Build Local:** O Maven gera o arquivo `.jar` da aplicação.
 2.  **Transferência:** O script envia o JAR, o `Dockerfile` e o `docker-compose.yml` para as instâncias de aplicação via **SCP**.
 3.  **Execução Remota:** Via **SSH**, o script comanda o Docker Compose para reconstruir as imagens e subir os containers (`down` seguido de `up --build -d`).
+
+---
+
+## 🔄 Zero downtime entre APP‑1 e APP‑2
+
+* APP‑1 atualiza
+
+* APP‑2 continua atendendo
+
+* LB distribui tráfego
+
+* Depois APP‑2 atualiza
+
+* Isso é blue/green deployment na prática.
 
 ---
 
