@@ -1,12 +1,13 @@
 package com.accenture.supermarket.model;
 
+import com.accenture.supermarket.dto.ClienteDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-
 @Entity
-@Data
+@Table(name = "clientes")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,7 +17,6 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
     private String cpf;
@@ -24,4 +24,12 @@ public class Cliente {
     private String telefone;
 
     private String email;
+
+    public void atualizar(ClienteDTO dto) {
+        this.nome = dto.getNome();
+        this.cpf = dto.getCpf();
+        this.telefone = dto.getTelefone();
+        this.email = dto.getEmail();
+    }
+
 }

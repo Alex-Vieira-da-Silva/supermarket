@@ -1,14 +1,14 @@
 package com.accenture.supermarket.dto;
 
+import com.accenture.supermarket.model.Produto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class ProdutoDTO {
 
-    private Long id;
-
     @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nome;
 
     @NotNull(message = "O preço é obrigatório")
@@ -19,13 +19,11 @@ public class ProdutoDTO {
     @PositiveOrZero(message = "A quantidade não pode ser negativa")
     private Integer quantidade;
 
-    public ProdutoDTO(Long id, String nome, Double preco, Integer quantidade) {
-        this.id = id;
+    public ProdutoDTO() {}
+    public ProdutoDTO(String nome, Double preco, Integer quantidade) {
         this.nome = nome;
         this.preco = preco;
         this.quantidade = quantidade;
     }
 
-    public ProdutoDTO() {
-    }
 }

@@ -1,6 +1,7 @@
 package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.UsuarioDTO;
+import com.accenture.supermarket.exception.UsuarioNaoEncontradoException;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id));
     }
 
     public Usuario criar(UsuarioDTO dto) {
@@ -44,6 +45,9 @@ public class UsuarioService {
     }
 
     public void deletar(Long id) {
+        if (!repository.existsById(id)) {
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id);
+        }
         repository.deleteById(id);
     }
 }

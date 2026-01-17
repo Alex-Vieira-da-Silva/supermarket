@@ -1,7 +1,7 @@
 package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.ProdutoDTO;
-import com.accenture.supermarket.exception.NotFoundException;
+import com.accenture.supermarket.exception.ProdutoNaoEncontradoException;
 import com.accenture.supermarket.model.Produto;
 import com.accenture.supermarket.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,43 +15,38 @@ public class ProdutoService {
 
     private final ProdutoRepository repository;
 
-    public List<ProdutoDTO> listarTodos() {
-        return repository.findAll()
-                .stream()
-                .map(p -> new ProdutoDTO(p.getId(), p.getNome(), p.getPreco(), p.getQuantidade()))
-                .toList();
+    public List<Produto> listarTodos() {
+        return repository.findAll();
     }
 
-    public ProdutoDTO buscarPorId(Long id) {
-        Produto produto = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
-
-        return new ProdutoDTO(produto.getId(), produto.getNome(), produto.getPreco(), produto.getQuantidade());
+    public Produto buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id));
     }
 
-    public ProdutoDTO criar(ProdutoDTO dto) {
-        Produto produto = new Produto(null, dto.getNome(), dto.getPreco(), dto.getQuantidade());
-        Produto salvo = repository.save(produto);
+    public Produto criar(ProdutoDTO dto) {
+        Produto produto = Produto.builder()
+                .nome(dto.getNome())
+                .preco(dto.getPreco())
+                .quantidade(dto.getQuantidade())
+                .build();
 
-        return new ProdutoDTO(salvo.getId(), salvo.getNome(), salvo.getPreco(), salvo.getQuantidade());
+        return repository.save(produto);
     }
 
-    public ProdutoDTO atualizar(Long id, ProdutoDTO dto) {
-        Produto produto = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
+    public Produto atualizar(Long id, ProdutoDTO dto) {
+        Produto produto = buscarPorId(id);
 
         produto.setNome(dto.getNome());
         produto.setPreco(dto.getPreco());
         produto.setQuantidade(dto.getQuantidade());
 
-        Produto salvo = repository.save(produto);
-
-        return new ProdutoDTO(salvo.getId(), salvo.getNome(), salvo.getPreco(), salvo.getQuantidade());
+        return repository.save(produto);
     }
 
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new NotFoundException("Produto não encontrado");
+            throw new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id);
         }
         repository.deleteById(id);
     }

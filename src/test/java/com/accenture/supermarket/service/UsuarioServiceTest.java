@@ -5,6 +5,7 @@ import com.accenture.supermarket.exception.NotFoundException;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,35 +31,42 @@ class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Deve listar todos os usuários")
     void deveListarTodos() {
         when(repository.findAll()).thenReturn(List.of(new Usuario()));
 
         List<Usuario> usuarios = service.listarTodos();
 
         assertFalse(usuarios.isEmpty());
-        verify(repository, times(1)).findAll();
+        verify(repository).findAll();
     }
 
     @Test
+    @DisplayName("Deve buscar usuário por ID")
     void deveBuscarPorId() {
         Usuario usuario = new Usuario(1L, "alex", "123", "ADMIN");
         when(repository.findById(1L)).thenReturn(Optional.of(usuario));
 
         Usuario resultado = service.buscarPorId(1L);
 
-        assertEquals("alex", resultado.getUsername());
-        verify(repository, times(1)).findById(1L);
+        assertAll(
+                () -> assertEquals("alex", resultado.getUsername()),
+                () -> assertEquals("ADMIN", resultado.getRole()),
+                () -> verify(repository).findById(1L)
+        );
     }
 
     @Test
+    @DisplayName("Deve lançar erro ao buscar usuário inexistente")
     void deveLancarErroQuandoNaoEncontrar() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> service.buscarPorId(1L));
-        verify(repository, times(1)).findById(1L);
+        verify(repository).findById(1L);
     }
 
     @Test
+    @DisplayName("Deve criar um usuário")
     void deveCriarUsuario() {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("alex");
@@ -70,11 +78,15 @@ class UsuarioServiceTest {
 
         Usuario resultado = service.criar(dto);
 
-        assertEquals("alex", resultado.getUsername());
-        verify(repository, times(1)).save(any());
+        assertAll(
+                () -> assertEquals("alex", resultado.getUsername()),
+                () -> assertEquals("ADMIN", resultado.getRole()),
+                () -> verify(repository).save(any(Usuario.class))
+        );
     }
 
     @Test
+    @DisplayName("Deve atualizar um usuário existente")
     void deveAtualizarUsuario() {
         Usuario existente = new Usuario(1L, "alex", "123", "ADMIN");
         when(repository.findById(1L)).thenReturn(Optional.of(existente));
@@ -87,17 +99,32 @@ class UsuarioServiceTest {
 
         Usuario atualizado = service.atualizar(1L, dto);
 
-        assertEquals("novo", atualizado.getUsername());
-        assertEquals("USER", atualizado.getRole());
-        verify(repository, times(1)).save(existente);
+        assertAll(
+                () -> assertEquals("novo", atualizado.getUsername()),
+                () -> assertEquals("USER", atualizado.getRole()),
+                () -> verify(repository).findById(1L),
+                () -> verify(repository).save(existente)
+        );
     }
 
     @Test
+    @DisplayName("Deve deletar um usuário existente")
     void deveDeletarUsuario() {
+        when(repository.existsById(1L)).thenReturn(true);
         doNothing().when(repository).deleteById(1L);
 
         service.deletar(1L);
 
-        verify(repository, times(1)).deleteById(1L);
+        verify(repository).existsById(1L);
+        verify(repository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar deletar usuário inexistente")
+    void deveLancarErroAoDeletarQuandoIdNaoExiste() {
+        when(repository.existsById(1L)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> service.deletar(1L));
+        verify(repository).existsById(1L);
     }
 }

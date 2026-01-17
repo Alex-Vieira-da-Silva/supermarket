@@ -1,6 +1,7 @@
 package com.accenture.supermarket.integration;
 
 import com.accenture.supermarket.dto.ClienteDTO;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ class ClienteIntegrationTest {
     private WebTestClient client;
 
     @Test
+    @DisplayName("Deve criar um cliente via API")
     void deveCriarCliente() {
         ClienteDTO dto = new ClienteDTO();
         dto.setNome("Alex");
@@ -36,6 +38,7 @@ class ClienteIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve listar clientes via API")
     void deveListarClientes() {
         client.get()
                 .uri("http://localhost:" + port + "/clientes")

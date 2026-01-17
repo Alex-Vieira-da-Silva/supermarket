@@ -1,8 +1,7 @@
 package com.accenture.supermarket.dto;
 
-import jakarta.validation.constraints.Email;
+import com.accenture.supermarket.model.Cliente;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -16,4 +15,13 @@ public class ClienteDTO {
     private String telefone;
 
     private String email;
+
+    public ClienteDTO() {}
+
+    public ClienteDTO(String nome, String cpf, String telefone, String email) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.email = email;
+    }
 }

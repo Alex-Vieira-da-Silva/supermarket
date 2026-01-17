@@ -6,9 +6,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "produtos")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Produto {
 
     @Id

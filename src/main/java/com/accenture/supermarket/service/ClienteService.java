@@ -1,6 +1,7 @@
 package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.ClienteDTO;
+import com.accenture.supermarket.exception.ClienteNaoEncontradoException;
 import com.accenture.supermarket.model.Cliente;
 import com.accenture.supermarket.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ClienteService {
 
     public Cliente buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado com ID: " + id));
     }
 
     public Cliente criar(ClienteDTO dto) {
@@ -36,16 +37,13 @@ public class ClienteService {
 
     public Cliente atualizar(Long id, ClienteDTO dto) {
         Cliente cliente = buscarPorId(id);
-
-        cliente.setNome(dto.getNome());
-        cliente.setCpf(dto.getCpf());
-        cliente.setTelefone(dto.getTelefone());
-        cliente.setEmail(dto.getEmail());
-
+        cliente.atualizar(dto);
         return repository.save(cliente);
     }
 
     public void deletar(Long id) {
-        repository.deleteById(id);
+        if (!repository.existsById(id)) {
+            throw new ClienteNaoEncontradoException("Cliente não encontrado com ID: " + id);
+        }
     }
 }
