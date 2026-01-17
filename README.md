@@ -20,6 +20,19 @@ A infraestrutura foi desenhada para separar as responsabilidades de rede, aplica
 
 ---
 
+## 🔄 Zero downtime entre APP‑1 e APP‑2
+
+* APP‑1 atualiza
+
+* APP‑2 continua atendendo
+
+* LB distribui tráfego
+
+* Depois APP‑2 atualiza
+
+Isso é blue/green deployment na prática.
+
+---
 ## 🚀 Tecnologias Utilizadas
 
 * **Cloud:** AWS (EC2, VPC, Security Groups, Internet Gateway).
