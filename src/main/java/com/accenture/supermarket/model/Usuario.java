@@ -1,5 +1,6 @@
 package com.accenture.supermarket.model;
 
+import com.accenture.supermarket.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -26,4 +27,11 @@ public class Usuario {
 
     @NotBlank
     private String role; // ADMIN, USER, etc.
+
+    public void atualizar(UsuarioDTO dto) {
+        this.username = dto.getUsername();
+        this.password = dto.getPassword();
+        this.role = dto.getRole();
+    }
+
 }

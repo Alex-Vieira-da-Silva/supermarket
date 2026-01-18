@@ -1,5 +1,6 @@
 package com.accenture.supermarket.model;
 
+import com.accenture.supermarket.dto.ProdutoDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -27,4 +28,11 @@ public class Produto {
     @NotNull(message = "A quantidade é obrigatória")
     @PositiveOrZero(message = "A quantidade não pode ser negativa")
     private Integer quantidade;
+
+    public void atualizar(ProdutoDTO dto) {
+        this.nome = dto.getNome();
+        this.preco = dto.getPreco();
+        this.quantidade = dto.getQuantidade();
+    }
+
 }

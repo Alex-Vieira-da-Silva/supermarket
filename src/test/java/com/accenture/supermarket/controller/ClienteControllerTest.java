@@ -37,7 +37,7 @@ class ClienteControllerTest {
                 "Alex",
                 "12345678901",
                 "81999999999",
-                "alex@email"
+                "alex@tomail.email"
         );
 
         Cliente cliente = new Cliente(

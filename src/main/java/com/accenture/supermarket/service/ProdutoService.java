@@ -21,7 +21,8 @@ public class ProdutoService {
 
     public Produto buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id));
+                .orElseThrow(() ->
+                        new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id));
     }
 
     public Produto criar(ProdutoDTO dto) {
@@ -36,11 +37,7 @@ public class ProdutoService {
 
     public Produto atualizar(Long id, ProdutoDTO dto) {
         Produto produto = buscarPorId(id);
-
-        produto.setNome(dto.getNome());
-        produto.setPreco(dto.getPreco());
-        produto.setQuantidade(dto.getQuantidade());
-
+        produto.atualizar(dto);
         return repository.save(produto);
     }
 
@@ -48,6 +45,7 @@ public class ProdutoService {
         if (!repository.existsById(id)) {
             throw new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id);
         }
+
         repository.deleteById(id);
     }
 }

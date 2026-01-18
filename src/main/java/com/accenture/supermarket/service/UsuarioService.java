@@ -21,7 +21,8 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() ->
+                        new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id));
     }
 
     public Usuario criar(UsuarioDTO dto) {
@@ -36,11 +37,7 @@ public class UsuarioService {
 
     public Usuario atualizar(Long id, UsuarioDTO dto) {
         Usuario usuario = buscarPorId(id);
-
-        usuario.setUsername(dto.getUsername());
-        usuario.setPassword(dto.getPassword());
-        usuario.setRole(dto.getRole());
-
+        usuario.atualizar(dto);
         return repository.save(usuario);
     }
 
@@ -48,6 +45,7 @@ public class UsuarioService {
         if (!repository.existsById(id)) {
             throw new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id);
         }
+
         repository.deleteById(id);
     }
 }

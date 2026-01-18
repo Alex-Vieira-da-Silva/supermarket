@@ -21,7 +21,8 @@ public class ClienteService {
 
     public Cliente buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new ClienteNaoEncontradoException(
+                        "Cliente não encontrado com ID: " + id));
     }
 
     public Cliente criar(ClienteDTO dto) {
@@ -43,7 +44,10 @@ public class ClienteService {
 
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new ClienteNaoEncontradoException("Cliente não encontrado com ID: " + id);
+            throw new ClienteNaoEncontradoException(
+                    "Cliente não encontrado com ID: " + id);
         }
+
+        repository.deleteById(id);
     }
 }

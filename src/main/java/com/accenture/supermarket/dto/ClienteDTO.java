@@ -1,6 +1,5 @@
 package com.accenture.supermarket.dto;
 
-import com.accenture.supermarket.model.Cliente;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
