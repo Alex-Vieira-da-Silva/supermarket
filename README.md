@@ -59,8 +59,8 @@ O processo de deploy é realizado através de um script Bash automatizado:
 
 | Recurso                    | URL |
 |:---------------------------| :--- |
-| **Link da API na AWS**     | [http://3.224.211.157/swagger-ui/index.html#/](http://3.228.6.162/swagger-ui/index.html#/) |
-| **Healthcheck (Actuator)** | [http://3.224.211.157/actuator/health](http://3.228.6.162/actuator/health) |
+| **Link da API na AWS**     | [http://3.224.211.157/swagger-ui/index.html#/](http://3.224.211.157/swagger-ui/index.html#/) |
+| **Healthcheck (Actuator)** | [http://3.224.211.157/actuator/health](http://3.224.211.157/actuator/health) |
 
 ---
 
