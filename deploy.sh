@@ -4,16 +4,16 @@ echo "============================================"
 echo " INICIANDO DEPLOY COMPLETO (DB + APP + LB)"
 echo "============================================"
 
-KEY="/home/ec2-user/Key_Projeto.pem"
+KEY="/home/ec2-user/Key_project.pem"
 
-EC2_DB="ec2-user@10.0.143.61"
-EC2_APP1="ec2-user@10.0.141.223"
-EC2_APP2="ec2-user@10.0.134.49"
-EC2_LB="ec2-user@10.0.6.79"
+EC2_DB="ec2-user@10.0.132.158"
+EC2_APP1="ec2-user@10.0.136.157"
+EC2_APP2="ec2-user@10.0.138.135"
+EC2_LB="ec2-user@10.0.3.208"
 
 DIR_DB="/home/ec2-user/mysql"
 DIR_APP="/home/ec2-user/supermarket"
-DIR_LB="/home/ec2-user/nginx"
+DIR_LB="/home/ec2-user"
 
 echo "============================================"
 echo " CRIANDO DIRETÓRIOS REMOTOS"
@@ -28,13 +28,9 @@ echo "============================================"
 echo " ENVIANDO docker-compose-db.yml PARA EC2-DB"
 echo "============================================"
 
-scp -i "$KEY" docker-compose-db.yml $EC2_DB:$DIR_DB/
+scp -i "$KEY" docker-compose-db.yml $EC2_DB:$DIR_DB/docker-compose.yml
 
-ssh -i "$KEY" $EC2_DB "
-    cd $DIR_DB &&
-    docker-compose down || true &&
-    docker-compose up -d
-"
+ssh -i "$KEY" $EC2_DB "cd $DIR_DB && docker-compose down && docker-compose up -d"
 
 echo "============================================"
 echo " ENVIANDO ARQUIVOS PARA EC2-APP-JAVA-1"
@@ -71,7 +67,7 @@ echo "============================================"
 scp -i "$KEY" nginx.conf $EC2_LB:$DIR_LB/
 
 ssh -i "$KEY" $EC2_LB "
-    sudo cp $DIR_LB/nginx.conf /etc/nginx/nginx.conf &&
+    sudo cp /home/ec2-user/nginx.conf /etc/nginx/nginx.conf &&
     sudo systemctl restart nginx
 "
 

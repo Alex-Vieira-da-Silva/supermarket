@@ -1,14 +1,11 @@
-version: "3.9"
-
 services:
   supermarket:
     build: .
     image: supermarket-app
-    container_name: supermarket
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://10.0.143.61:3306/supermarket?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://10.0.132.158:3306/supermarket?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: appuser
       SPRING_DATASOURCE_PASSWORD: app123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
@@ -19,3 +16,9 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

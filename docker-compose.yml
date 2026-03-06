@@ -1,17 +1,20 @@
-version: "3.9"
-
 services:
   supermarket:
     build: .
     image: supermarket-app
-    container_name: supermarket
     ports:
       - "8080:8080"
     environment:
-      - SERVER_ADDRESS=0.0.0.0
+      SERVER_ADDRESS: 0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
