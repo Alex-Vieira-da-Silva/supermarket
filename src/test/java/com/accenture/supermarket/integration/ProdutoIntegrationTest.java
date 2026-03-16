@@ -5,15 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+@ActiveProfiles("test")
 class ProdutoIntegrationTest {
-
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private WebTestClient client;
@@ -27,21 +27,26 @@ class ProdutoIntegrationTest {
         dto.setQuantidade(5);
 
         client.post()
-                .uri("http://localhost:" + port + "/produtos")
+                .uri("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.nome").isEqualTo("Arroz");
+                .jsonPath("$.id").exists()
+                .jsonPath("$.nome").isEqualTo("Arroz")
+                .jsonPath("$.preco").isEqualTo(10.0)
+                .jsonPath("$.quantidade").isEqualTo(5);
     }
 
     @Test
     @DisplayName("Deve listar produtos via API")
     void deveListarProdutos() {
         client.get()
-                .uri("http://localhost:" + port + "/produtos")
+                .uri("/produtos")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
     }
 }

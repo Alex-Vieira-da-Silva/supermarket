@@ -64,7 +64,7 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/clientes/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.erro").value("Cliente não encontrado"));
+                .andExpect(jsonPath("$.mensagem").value("Cliente não encontrado"));
     }
 
     // 404 - Produto
@@ -76,7 +76,7 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/produtos/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.erro").value("Produto não encontrado"));
+                .andExpect(jsonPath("$.mensagem").value("Produto não encontrado"));
     }
 
     // 404 - Usuário

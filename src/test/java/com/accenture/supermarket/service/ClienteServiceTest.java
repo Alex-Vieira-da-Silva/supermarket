@@ -1,15 +1,15 @@
 package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.ClienteDTO;
-import com.accenture.supermarket.exception.NotFoundException;
+import com.accenture.supermarket.exception.ClienteNaoEncontradoException;
 import com.accenture.supermarket.model.Cliente;
 import com.accenture.supermarket.repository.ClienteRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ClienteServiceTest {
 
     @Mock
@@ -25,10 +26,6 @@ class ClienteServiceTest {
     @InjectMocks
     private ClienteService service;
 
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     @DisplayName("Deve listar todos os clientes")
@@ -60,7 +57,7 @@ class ClienteServiceTest {
     void deveLancarErroQuandoNaoEncontrar() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.buscarPorId(1L));
+        assertThrows(ClienteNaoEncontradoException.class, () -> service.buscarPorId(1L));
         verify(repository).findById(1L);
     }
 
@@ -123,7 +120,7 @@ class ClienteServiceTest {
 
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.atualizar(1L, dto));
+        assertThrows(ClienteNaoEncontradoException.class, () -> service.atualizar(1L, dto));
         verify(repository).findById(1L);
     }
 
@@ -143,7 +140,7 @@ class ClienteServiceTest {
     void deveLancarErroAoDeletarQuandoIdNaoExiste() {
         when(repository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> service.deletar(1L));
+        assertThrows(ClienteNaoEncontradoException.class, () -> service.deletar(1L));
         verify(repository).existsById(1L);
     }
 }

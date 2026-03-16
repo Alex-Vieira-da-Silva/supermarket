@@ -33,11 +33,12 @@ class ClienteControllerTest {
     @Test
     @DisplayName("Deve criar um cliente")
     void deveCriarCliente() throws Exception {
+
         ClienteDTO dto = new ClienteDTO(
                 "Alex",
                 "12345678901",
                 "81999999999",
-                "alex@tomail.email"
+                "alex@email"
         );
 
         Cliente cliente = new Cliente(
@@ -56,6 +57,7 @@ class ClienteControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/clientes/1"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nome").value("Alex"))
                 .andExpect(jsonPath("$.cpf").value("12345678901"))
                 .andExpect(jsonPath("$.telefone").value("81999999999"))

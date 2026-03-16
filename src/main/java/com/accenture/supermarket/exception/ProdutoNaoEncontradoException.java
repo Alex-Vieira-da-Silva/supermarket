@@ -1,6 +1,6 @@
 package com.accenture.supermarket.exception;
 
-public class ProdutoNaoEncontradoException extends RuntimeException {
+public class ProdutoNaoEncontradoException extends NotFoundException {
 
     public ProdutoNaoEncontradoException(Long id) {
         super("Produto não encontrado: " + id);

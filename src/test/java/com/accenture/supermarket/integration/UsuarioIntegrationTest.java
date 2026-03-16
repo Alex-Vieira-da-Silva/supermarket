@@ -5,15 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+@ActiveProfiles("test")
 class UsuarioIntegrationTest {
-
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private WebTestClient client;
@@ -27,21 +27,25 @@ class UsuarioIntegrationTest {
         dto.setRole("ADMIN");
 
         client.post()
-                .uri("http://localhost:" + port + "/usuarios")
+                .uri("/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.username").isEqualTo("alex");
+                .jsonPath("$.id").exists()
+                .jsonPath("$.username").isEqualTo("alex")
+                .jsonPath("$.role").isEqualTo("ADMIN");
     }
 
     @Test
     @DisplayName("Deve listar usuários via API")
     void deveListarUsuarios() {
         client.get()
-                .uri("http://localhost:" + port + "/usuarios")
+                .uri("/usuarios")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
     }
 }

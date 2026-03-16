@@ -38,10 +38,12 @@ class UsuarioRepositoryTest {
         Usuario usuario = new Usuario(null, "alex", "123", "ADMIN");
         Usuario salvo = repository.save(usuario);
 
-        Usuario encontrado = repository.findById(salvo.getId()).orElse(null);
+        Optional<Usuario> opt = repository.findById(salvo.getId());
+
+        assertTrue(opt.isPresent());
+        Usuario encontrado = opt.get();
 
         assertAll(
-                () -> assertNotNull(encontrado),
                 () -> assertEquals("alex", encontrado.getUsername()),
                 () -> assertEquals("123", encontrado.getPassword()),
                 () -> assertEquals("ADMIN", encontrado.getRole())

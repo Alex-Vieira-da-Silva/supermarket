@@ -38,7 +38,9 @@ class ProdutoRepositoryTest {
         Produto produto = new Produto(null, "Feijão", 8.0, 3);
         Produto salvo = repository.save(produto);
 
-        Produto encontrado = repository.findById(salvo.getId()).orElse(null);
+        Optional<Produto> optional = repository.findById(salvo.getId());
+        assertTrue(optional.isPresent());
+        Produto encontrado = optional.get();
 
         assertAll(
                 () -> assertNotNull(encontrado),

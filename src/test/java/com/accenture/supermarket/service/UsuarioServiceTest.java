@@ -1,15 +1,15 @@
 package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.UsuarioDTO;
-import com.accenture.supermarket.exception.NotFoundException;
+import com.accenture.supermarket.exception.UsuarioNaoEncontradoException;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.repository.UsuarioRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
 
     @Mock
@@ -25,10 +26,6 @@ class UsuarioServiceTest {
     @InjectMocks
     private UsuarioService service;
 
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     @DisplayName("Deve listar todos os usuários")
@@ -61,7 +58,7 @@ class UsuarioServiceTest {
     void deveLancarErroQuandoNaoEncontrar() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.buscarPorId(1L));
+        assertThrows(UsuarioNaoEncontradoException.class, () -> service.buscarPorId(1L));
         verify(repository).findById(1L);
     }
 
@@ -124,7 +121,7 @@ class UsuarioServiceTest {
     void deveLancarErroAoDeletarQuandoIdNaoExiste() {
         when(repository.existsById(1L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> service.deletar(1L));
+        assertThrows(UsuarioNaoEncontradoException.class, () -> service.deletar(1L));
         verify(repository).existsById(1L);
     }
 }

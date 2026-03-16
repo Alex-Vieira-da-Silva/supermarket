@@ -36,26 +36,29 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Deve listar todos os produtos")
     void deveListarTodos() throws Exception {
+        Produto produto = new Produto(1L, "Arroz", 10.0, 5);
+
         Mockito.when(service.listarTodos())
-                .thenReturn(List.of(new Produto()));
+                .thenReturn(List.of(produto));
 
         mockMvc.perform(get("/produtos"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].nome").value("Arroz"))
+                .andExpect(jsonPath("$[0].preco").value(10.0))
+                .andExpect(jsonPath("$[0].quantidade").value(5));
     }
 
     @Test
     @DisplayName("Deve buscar produto por ID")
     void deveBuscarPorId() throws Exception {
-        Produto dto = new Produto();
-        dto.setId(1L);
-        dto.setNome("Arroz");
-        dto.setPreco(10.0);
-        dto.setQuantidade(5);
+        Produto produto = new Produto(1L, "Arroz", 10.0, 5);
 
-        Mockito.when(service.buscarPorId(1L)).thenReturn(dto);
+        Mockito.when(service.buscarPorId(1L)).thenReturn(produto);
 
         mockMvc.perform(get("/produtos/1"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nome").value("Arroz"))
                 .andExpect(jsonPath("$.preco").value(10.0))
                 .andExpect(jsonPath("$.quantidade").value(5));
@@ -75,20 +78,21 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Deve criar um produto")
     void deveCriarProduto() throws Exception {
-        Produto produto = new Produto();
-        produto.setId(1L);
-        produto.setNome("Arroz");
-        produto.setPreco(10.0);
-        produto.setQuantidade(5);
+        ProdutoDTO dto = new ProdutoDTO("Arroz", 10.0, 5);
 
-        Mockito.when(service.criar(any())).thenReturn(produto);
+        Produto produto = new Produto(1L, dto.getNome(), dto.getPreco(), dto.getQuantidade());
+
+        Mockito.when(service.criar(any(ProdutoDTO.class))).thenReturn(produto);
 
         mockMvc.perform(post("/produtos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(produto)))
+                        .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/produtos/1"))
-                .andExpect(jsonPath("$.nome").value("Arroz"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.nome").value("Arroz"))
+                .andExpect(jsonPath("$.preco").value(10.0))
+                .andExpect(jsonPath("$.quantidade").value(5));
     }
 
     @Test
@@ -105,18 +109,20 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Deve atualizar um produto")
     void deveAtualizarProduto() throws Exception {
-        Produto dto = new Produto();
-        dto.setNome("Feijão");
-        dto.setPreco(8.0);
-        dto.setQuantidade(3);
+        ProdutoDTO dto = new ProdutoDTO("Feijão", 8.0, 3);
 
-        Mockito.when(service.atualizar(eq(1L), any())).thenReturn(dto);
+        Produto atualizado = new Produto(1L, dto.getNome(), dto.getPreco(), dto.getQuantidade());
+
+        Mockito.when(service.atualizar(eq(1L), any(ProdutoDTO.class))).thenReturn(atualizado);
 
         mockMvc.perform(put("/produtos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome").value("Feijão"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.nome").value("Feijão"))
+                .andExpect(jsonPath("$.preco").value(8.0))
+                .andExpect(jsonPath("$.quantidade").value(3));
     }
 
     @Test

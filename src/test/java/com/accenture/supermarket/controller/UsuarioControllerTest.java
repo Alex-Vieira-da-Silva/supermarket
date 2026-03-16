@@ -36,10 +36,15 @@ class UsuarioControllerTest {
     @Test
     @DisplayName("Deve listar todos os usuários")
     void deveListarTodos() throws Exception {
-        Mockito.when(service.listarTodos()).thenReturn(List.of(new Usuario()));
+        Usuario usuario = new Usuario(1L, "alex", "123", "ADMIN");
+
+        Mockito.when(service.listarTodos()).thenReturn(List.of(usuario));
 
         mockMvc.perform(get("/usuarios"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].username").value("alex"))
+                .andExpect(jsonPath("$[0].role").value("ADMIN"));
     }
 
     @Test
@@ -51,7 +56,9 @@ class UsuarioControllerTest {
 
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("alex"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.username").value("alex"))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test
@@ -62,7 +69,7 @@ class UsuarioControllerTest {
 
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+                .andExpect(jsonPath("$.erro").value("Usuário não encontrado"));
     }
 
     @Test
@@ -75,15 +82,18 @@ class UsuarioControllerTest {
 
         Usuario usuarioCriado = new Usuario(1L, "alex", "123", "ADMIN");
 
-        Mockito.when(service.criar(any())).thenReturn(usuarioCriado);
+        Mockito.when(service.criar(any(UsuarioDTO.class))).thenReturn(usuarioCriado);
 
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/usuarios/1"))
-                .andExpect(jsonPath("$.username").value("alex"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.username").value("alex"))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
+
 
     @Test
     @DisplayName("Deve retornar erro de validação ao criar usuário inválido")
@@ -100,18 +110,16 @@ class UsuarioControllerTest {
     @DisplayName("Deve atualizar um usuário")
     void deveAtualizarUsuario() throws Exception {
         UsuarioDTO dto = new UsuarioDTO();
-        dto.setUsername("novo");
-        dto.setPassword("321");
-        dto.setRole("USER");
 
         Usuario atualizado = new Usuario(1L, "novo", "321", "USER");
 
-        Mockito.when(service.atualizar(eq(1L), any())).thenReturn(atualizado);
+        Mockito.when(service.atualizar(eq(1L), any(UsuarioDTO.class))).thenReturn(atualizado);
 
         mockMvc.perform(put("/usuarios/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.username").value("novo"))
                 .andExpect(jsonPath("$.role").value("USER"));
     }

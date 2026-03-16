@@ -39,11 +39,11 @@ class ClienteRepositoryTest {
         Cliente cliente = new Cliente(null, "Alex", "12345678901", "81999999999", "alex@email");
         Cliente salvo = repository.save(cliente);
 
-        Cliente encontrado = repository.findById(salvo.getId()).orElse(null);
+        Optional<Cliente> encontrado = repository.findById(salvo.getId());
 
         assertAll(
-                () -> assertNotNull(encontrado),
-                () -> assertEquals("Alex", encontrado.getNome())
+                () -> assertTrue(encontrado.isPresent()),
+                () -> assertEquals("Alex", encontrado.get().getNome())
         );
     }
 
