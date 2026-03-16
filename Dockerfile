@@ -1,10 +1,12 @@
 FROM amazoncorretto:17-alpine
 
+RUN apk add --no-cache curl
+
 ENV TZ=America/Recife
 
 WORKDIR /app
 
-COPY supermarket-0.0.1-SNAPSHOT.jar app.jar
+COPY target/supermarket-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
