@@ -1,1 +1,49 @@
+name: Deploy Supermarket App
 
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login no Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build e Push da imagem Docker
+        run: |
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest"
+          echo "IMAGE_URI=$IMAGE_URI"
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+      - name: Deploy na EC2-APP-JAVA-1 via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_APP_1 }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy Supermarket App" \
+            --parameters commands="docker compose pull && docker compose up -d" \
+            --output text
+
+      - name: Deploy na EC2-APP-JAVA-2 via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_APP_2 }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy Supermarket App" \
+            --parameters commands="docker compose pull && docker compose up -d" \
+            --output text
