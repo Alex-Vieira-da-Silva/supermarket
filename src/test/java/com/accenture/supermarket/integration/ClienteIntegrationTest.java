@@ -40,7 +40,7 @@ class ClienteIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve listar clientes via API")
+    @DisplayName("Deve  listar clientes via API")
     void deveListarClientes() {
         client.get()
                 .uri("/clientes")
