@@ -28,7 +28,7 @@ class UsuarioServiceTest {
 
 
     @Test
-    @DisplayName("Deve listar todos os usuários")
+    @DisplayName("Deve listar  todos os usuários")
     void deveListarTodos() {
         when(repository.findAll()).thenReturn(List.of(new Usuario()));
 
