@@ -72,7 +72,7 @@ class ProdutoControllerTest {
 
         mockMvc.perform(get("/produtos/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.erro").value("Produto não encontrado"));
+                .andExpect(jsonPath("$.mensagem").value("Produto não encontrado"));
     }
 
     @Test

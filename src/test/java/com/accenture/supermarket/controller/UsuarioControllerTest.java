@@ -69,7 +69,7 @@ class UsuarioControllerTest {
 
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.erro").value("Usuário não encontrado"));
+                .andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
     }
 
     @Test
@@ -110,6 +110,9 @@ class UsuarioControllerTest {
     @DisplayName("Deve atualizar um usuário")
     void deveAtualizarUsuario() throws Exception {
         UsuarioDTO dto = new UsuarioDTO();
+        dto.setUsername("novo");
+        dto.setPassword("321");
+        dto.setRole("USER");
 
         Usuario atualizado = new Usuario(1L, "novo", "321", "USER");
 

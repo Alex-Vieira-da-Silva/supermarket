@@ -18,8 +18,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build do projeto com Maven (ignorando testes)
-        run: mvn -B clean package -DskipTests
+      - name: Build do projeto com Maven (executando testes)
+        run: mvn -B clean verify
 
       - name: Configurar credenciais AWS
         uses: aws-actions/configure-aws-credentials@v4
