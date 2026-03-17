@@ -4,11 +4,14 @@ import com.accenture.supermarket.dto.UsuarioDTO;
 import com.accenture.supermarket.exception.NotFoundException;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.service.UsuarioService;
+import com.accenture.supermarket.security.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -21,7 +24,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UsuarioController.class)
+@WebMvcTest(controllers = UsuarioController.class,
+        excludeAutoConfiguration = {SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class})
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
 class UsuarioControllerTest {
 
     @Autowired
@@ -30,13 +35,16 @@ class UsuarioControllerTest {
     @MockBean
     private UsuarioService service;
 
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Autowired
     private ObjectMapper mapper;
 
     @Test
     @DisplayName("Deve listar todos os usuários")
     void deveListarTodos() throws Exception {
-        Usuario usuario = new Usuario(1L, "alex", "123", "ADMIN");
+        Usuario usuario = new Usuario(1L, "alex", "Senha@123", "ADMIN");
 
         Mockito.when(service.listarTodos()).thenReturn(List.of(usuario));
 
@@ -50,7 +58,7 @@ class UsuarioControllerTest {
     @Test
     @DisplayName("Deve buscar usuário por ID")
     void deveBuscarPorId() throws Exception {
-        Usuario usuario = new Usuario(1L, "alex", "123", "ADMIN");
+        Usuario usuario = new Usuario(1L, "alex", "Senha@123", "ADMIN");
 
         Mockito.when(service.buscarPorId(1L)).thenReturn(usuario);
 
@@ -77,10 +85,10 @@ class UsuarioControllerTest {
     void deveCriarUsuario() throws Exception {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("alex");
-        dto.setPassword("123");
+        dto.setPassword("Senha@123");
         dto.setRole("ADMIN");
 
-        Usuario usuarioCriado = new Usuario(1L, "alex", "123", "ADMIN");
+        Usuario usuarioCriado = new Usuario(1L, "alex", "Senha@123", "ADMIN");
 
         Mockito.when(service.criar(any(UsuarioDTO.class))).thenReturn(usuarioCriado);
 
@@ -111,10 +119,10 @@ class UsuarioControllerTest {
     void deveAtualizarUsuario() throws Exception {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("novo");
-        dto.setPassword("321");
+        dto.setPassword("Senha@456");
         dto.setRole("USER");
 
-        Usuario atualizado = new Usuario(1L, "novo", "321", "USER");
+        Usuario atualizado = new Usuario(1L, "novo", "Senha@456", "USER");
 
         Mockito.when(service.atualizar(eq(1L), any(UsuarioDTO.class))).thenReturn(atualizado);
 

@@ -3,10 +3,13 @@ package com.accenture.supermarket.controller;
 import com.accenture.supermarket.dto.ClienteDTO;
 import com.accenture.supermarket.model.Cliente;
 import com.accenture.supermarket.service.ClienteService;
+import com.accenture.supermarket.security.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -18,7 +21,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ClienteController.class)
+@WebMvcTest(controllers = ClienteController.class,
+        excludeAutoConfiguration = {SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class})
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
 class ClienteControllerTest {
 
     @Autowired
@@ -26,6 +31,9 @@ class ClienteControllerTest {
 
     @MockBean
     private ClienteService service;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     private ObjectMapper mapper;
@@ -38,7 +46,7 @@ class ClienteControllerTest {
                 "Alex",
                 "12345678901",
                 "81999999999",
-                "alex@email"
+                "alex@email.com"
         );
 
         Cliente cliente = new Cliente(
@@ -61,7 +69,7 @@ class ClienteControllerTest {
                 .andExpect(jsonPath("$.nome").value("Alex"))
                 .andExpect(jsonPath("$.cpf").value("12345678901"))
                 .andExpect(jsonPath("$.telefone").value("81999999999"))
-                .andExpect(jsonPath("$.email").value("alex@email"));
+                .andExpect(jsonPath("$.email").value("alex@email.com"));
 
         verify(service).criar(any(ClienteDTO.class));
     }

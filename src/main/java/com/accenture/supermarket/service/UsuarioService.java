@@ -5,6 +5,7 @@ import com.accenture.supermarket.exception.UsuarioNaoEncontradoException;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Usuario> listarTodos() {
         return repository.findAll();
@@ -28,7 +30,7 @@ public class UsuarioService {
     public Usuario criar(UsuarioDTO dto) {
         Usuario usuario = Usuario.builder()
                 .username(dto.getUsername())
-                .password(dto.getPassword())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .role(dto.getRole())
                 .build();
 
@@ -37,7 +39,7 @@ public class UsuarioService {
 
     public Usuario atualizar(Long id, UsuarioDTO dto) {
         Usuario usuario = buscarPorId(id);
-        usuario.atualizar(dto);
+        usuario.atualizar(dto, passwordEncoder);
         return repository.save(usuario);
     }
 

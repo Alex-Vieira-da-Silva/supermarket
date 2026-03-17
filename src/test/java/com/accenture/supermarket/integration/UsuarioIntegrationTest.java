@@ -32,7 +32,7 @@ class UsuarioIntegrationTest {
     void deveCriarUsuario() {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("alex");
-        dto.setPassword("123");
+        dto.setPassword("Senha@123");
         dto.setRole("ADMIN");
 
         HttpHeaders headers = new HttpHeaders();

@@ -34,7 +34,7 @@ class ClienteIntegrationTest {
         dto.setNome("Alex");
         dto.setCpf("12345678901");
         dto.setTelefone("81999999999");
-        dto.setEmail("alex@email");
+        dto.setEmail("alex@email.com");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

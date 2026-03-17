@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,9 @@ class UsuarioServiceTest {
 
     @Mock
     private UsuarioRepository repository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UsuarioService service;
@@ -67,10 +71,12 @@ class UsuarioServiceTest {
     void deveCriarUsuario() {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("alex");
-        dto.setPassword("123");
+        dto.setPassword("Senha@123");
         dto.setRole("ADMIN");
 
-        Usuario salvo = new Usuario(1L, "alex", "123", "ADMIN");
+        when(passwordEncoder.encode(any())).thenReturn("hash");
+
+        Usuario salvo = new Usuario(1L, "alex", "hash", "ADMIN");
         when(repository.save(any())).thenReturn(salvo);
 
         Usuario resultado = service.criar(dto);
@@ -85,14 +91,16 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve atualizar um usuário existente")
     void deveAtualizarUsuario() {
-        Usuario existente = new Usuario(1L, "alex", "123", "ADMIN");
+        Usuario existente = new Usuario(1L, "alex", "hash", "ADMIN");
         when(repository.findById(1L)).thenReturn(Optional.of(existente));
         when(repository.save(any())).thenReturn(existente);
 
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsername("novo");
-        dto.setPassword("321");
+        dto.setPassword("Senha@321");
         dto.setRole("USER");
+
+        when(passwordEncoder.encode(any())).thenReturn("hash2");
 
         Usuario atualizado = service.atualizar(1L, dto);
 

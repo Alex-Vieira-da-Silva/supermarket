@@ -4,6 +4,7 @@ import com.accenture.supermarket.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "usuarios")
@@ -28,9 +29,9 @@ public class Usuario {
     @NotBlank
     private String role; // ADMIN, USER, etc.
 
-    public void atualizar(UsuarioDTO dto) {
+    public void atualizar(UsuarioDTO dto, PasswordEncoder passwordEncoder) {
         this.username = dto.getUsername();
-        this.password = dto.getPassword();
+        this.password = passwordEncoder.encode(dto.getPassword());
         this.role = dto.getRole();
     }
 
