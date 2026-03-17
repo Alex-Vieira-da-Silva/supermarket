@@ -8,9 +8,9 @@ Aplicação Spring Boot rodando em um ambiente AWS de alta disponibilidade, cont
 
 - VPC: rede isolada que agrupa instâncias de aplicação e banco de dados, controlando o tráfego.
 - Load Balancer (NGINX): ponto único de entrada; recebe requisições de clientes/Swagger e distribui para as instâncias de aplicação.
-- Application EC2 (APP-1 e APP-2): duas instâncias rodando containers Docker com a API Spring Boot.
-- Database EC2: instância dedicada rodando container MySQL, acessível apenas pela VPC.
-- ECR: registro de imagens Docker usado pelo pipeline de deploy.
+- Application EC2 (APP-1 e APP-2): cada nó roda o stack via `docker-compose-app.yml`, puxando a imagem da aplicação diretamente do ECR.
+- Database EC2: instância dedicada rodando container MySQL (definido em `docker-compose-db.yml`), acessível apenas pela VPC.
+- ECR: registro de imagens Docker usado pelo pipeline de deploy (build/push no CI; pull nos nós via `docker compose pull && up -d`).
 
 ---
 
@@ -55,6 +55,7 @@ Pré-requisitos de secrets no GitHub:
 | :--- | :--- |
 | Link da API na AWS | http://3.224.211.157/swagger-ui/index.html#/ |
 | Healthcheck (Actuator) | http://3.224.211.157/actuator/health |
+| Autenticação | POST /auth/login (body: username, password) |
 
 ---
 
@@ -71,6 +72,7 @@ Pré-requisitos de secrets no GitHub:
    docker-compose up -d
    ```
 4. Acesse: `http://localhost:8080/swagger-ui/index.html`
+5. Autentique: `POST /auth/login` com JSON `{"username":"<usuario>","password":"<senha>"}` e use o token retornado no header `Authorization: Bearer <token>` nas demais chamadas.
 
 ---
 
@@ -90,6 +92,15 @@ supermarket/
 ├── pom.xml                    # Gerenciador de dependências Maven
 ├── mvnw / mvnw.cmd            # Wrapper do Maven
 └── README.md                  # Documentação do projeto
+
+---
+
+## Segurança (resumo)
+
+- Autenticação via JWT: `/auth/login` gera o token; demais rotas exigem `Authorization: Bearer <token>`.
+- Roles: produtos e usuários só podem ser criados/alterados/deletados por `ROLE_ADMIN`; clientes por `ROLE_ADMIN` ou `ROLE_MANAGER` (delete apenas `ADMIN`).
+- Senhas armazenadas com BCrypt; políticas de senha aplicadas no DTO (mín. 8 chars, maiúscula/minúscula/dígito/especial).
+- Variáveis sensíveis via ambiente: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `JWT_EXPIRATION`, `SWAGGER_ENABLED`.
 ```
 
 ---

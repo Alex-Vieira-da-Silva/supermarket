@@ -1,15 +1,17 @@
 services:
   supermarket:
-    build: .
-    image: supermarket-app
+    image: ${ECR_IMAGE:-123456789012.dkr.ecr.us-east-1.amazonaws.com/supermarket:latest}
+    pull_policy: always
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://10.0.132.158:3306/supermarket?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: appuser
-      SPRING_DATASOURCE_PASSWORD: app123
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SERVER_ADDRESS: 0.0.0.0
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
