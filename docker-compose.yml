@@ -1,16 +1,16 @@
 services:
   app:
-    image: 992500432181.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:latest
+    image: ${ECR_IMAGE:-992500432181.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:v1}
     pull_policy: always
     container_name: supermarket-app
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: ${DB_URL:-jdbc:mysql://<host>:3306/<db>?useSSL=false&allowPublicKeyRetrieval=true}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-admin}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:-d2798bb10db64044a7d87a5c3e6427c95f4aac6d1e7b411b9f2078c0d1f5c00a3999606956f41b41d433513b4257f04bc7fd8c8c72265aea52a2c423d9843dd5}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
     restart: always

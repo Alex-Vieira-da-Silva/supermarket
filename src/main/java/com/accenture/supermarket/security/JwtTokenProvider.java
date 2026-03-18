@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -17,9 +18,10 @@ public class JwtTokenProvider {
     private final long expirationMillis;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret:change-me-please-0123456789abcdef0123456789abcdef}") String secret,
-            @Value("${jwt.expiration:3600000}") long expirationMillis) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
+            @Value("${JWT_SECRET}") String secret,
+            @Value("${JWT_EXPIRATION:3600000}") long expirationMillis) {
+
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMillis = expirationMillis;
     }
 
@@ -41,11 +43,14 @@ public class JwtTokenProvider {
 
     public boolean isValid(String token) {
         try {
-            parseClaims(token);
-            return true;
+            return !isExpired(token);
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isExpired(String token) {
+        return parseClaims(token).getExpiration().before(new Date());
     }
 
     private Claims parseClaims(String token) {
