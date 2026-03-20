@@ -6,6 +6,7 @@ import com.accenture.supermarket.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,9 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.context.annotation.Profile;
 
-@Tag(name = "Autenticação", description = "Autenticação baseada em JWT")
+@Tag(name = "0 - Autenticação", description = "Autenticação baseada em JWT")
 @RestController
 @RequestMapping("/auth")
 @Profile("!test")
