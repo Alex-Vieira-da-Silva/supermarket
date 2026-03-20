@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
         Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Erro de autentica\u00e7\u00e3o, acesso negado!");
+        erro.put("erro", "Erro de autoriza\u00e7\u00e3o, acesso negado!");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
     }
 
