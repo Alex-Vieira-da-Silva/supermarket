@@ -1,6 +1,6 @@
 services:
   supermarket:
-    image: ${ECR_IMAGE:-123456789012.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:v1.7}
+    image: ${ECR_IMAGE:-123456789012.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:v1.8}
     pull_policy: always
     ports:
       - "8080:8080"
