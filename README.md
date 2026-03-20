@@ -72,7 +72,7 @@ Pré-requisitos de secrets no GitHub:
    docker-compose up -d
    ```
 4. Acesse: `http://localhost:8080/swagger-ui/index.html`
-5. Autentique: `POST /auth/login` com JSON `{"username":"<usuario>","password":"<senha>"}` e use o token retornado no header `Authorization: Bearer <token>` nas demais chamadas.
+5. Autentique: por padr\u00e3o ser\u00e1 criado um usu\u00e1rio admin (`username: admin`, `password: Admin@123`). Estes valores podem ser alterados via vari\u00e1veis `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD` e `APP_ADMIN_ROLE`. Chame `POST /auth/login` com o JSON `{"username":"admin","password":"Admin@123"}` (ou as credenciais que voc\u00ea definir) e use o token retornado no header `Authorization: Bearer <token>` nas demais chamadas.
 
 ---
 
@@ -104,6 +104,12 @@ supermarket/
 ```
 
 ---
+
+## PermissÃµes por Role
+
+- `ADMIN`: CRUD completo de usuÃ¡rios, produtos e clientes.
+- `MANAGER`: criar/atualizar/deletar produtos; criar/atualizar clientes; leitura geral (todos os GETs).
+- `USER`: apenas leitura (GETs) dos recursos expostos.
 
 ## Notas
 

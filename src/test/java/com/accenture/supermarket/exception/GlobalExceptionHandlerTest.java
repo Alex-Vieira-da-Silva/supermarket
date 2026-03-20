@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAut
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -96,6 +97,18 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+    }
+
+    // 401 - Autenticação
+    @Test
+    @DisplayName("Deve retornar 401 quando a autenticação falhar")
+    void deveRetornar401QuandoAutenticacaoFalhar() throws Exception {
+        Mockito.when(clienteService.listarTodos())
+                .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        mockMvc.perform(get("/clientes"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.erro").value("Credenciais inválidas"));
     }
 
     // 500 - Erro genérico
