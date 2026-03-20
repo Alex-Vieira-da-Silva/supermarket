@@ -49,6 +49,24 @@ Pré-requisitos de secrets no GitHub:
 
 ---
 
+## Autenticação
+
+1. Acesse: `http://localhost:8080/swagger-ui/index.html`
+2. Login (passo a passo):
+   1. Use as credenciais padrão para login:  
+      - **username:** `admin`  
+      - **password:** `Admin@123`  
+   2. Envie `POST /auth/login` com o corpo `{"username":"admin","password":"Admin@123"}` (ou as credenciais que definiu).
+   3. Copie o token JWT da resposta e envie nas próximas requisições no header `Authorization: Bearer <token>`.
+
+## Permissões por Role
+
+- **ADMIN:** ler, criar, editar e deletar usuários, produtos e clientes.
+- **MANAGER:** ler tudo; criar, editar e deletar produtos; criar e editar clientes.
+- **USER:** pode ler todos os GETs, exceto os da tabela Usuário; não pode criar, ler, atualizar nem excluir registros de Usuário.
+
+---
+
 ## Endpoints Principais
 
 | Recurso | URL |
@@ -59,7 +77,7 @@ Pré-requisitos de secrets no GitHub:
 
 ---
 
-## Como Executar Localmente
+## Como Executar Locamente
 
 1. Instale Docker.
 2. Clone o repositório:
@@ -71,22 +89,6 @@ Pré-requisitos de secrets no GitHub:
    ```bash
    docker-compose up -d
    ```
-
-# Autenticação
-
-4. Acesse: `http://localhost:8080/swagger-ui/index.html`
-5. Login (passo a passo):
-   1. Use as credenciais padrão para login:  
-      - **username:** `admin`  
-      - **password:** `Admin@123`  
-   2. Envie `POST /auth/login` com o corpo `{"username":"admin","password":"Admin@123"}` (ou as credenciais que definiu).
-   3. Copie o token JWT da resposta e envie nas próximas requisições no header `Authorization: Bearer <token>`.
-
-## Permissões por Role
-
-- **ADMIN:** ler, criar, editar e deletar usuários, produtos e clientes.
-- **MANAGER:** ler tudo; criar, editar e deletar produtos; criar e editar clientes.
-- **USER:** ler tudo (todos os GETs).
 
 ---
 
