@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "0 - Autenticação", description = "Autenticação baseada em JWT")
+@Tag(name = "Autenticação", description = "Autenticação baseada em JWT")
 @RestController
 @RequestMapping("/auth")
 @Profile("!test")
