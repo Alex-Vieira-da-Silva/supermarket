@@ -71,8 +71,22 @@ Pré-requisitos de secrets no GitHub:
    ```bash
    docker-compose up -d
    ```
+
+# Autenticação
+
 4. Acesse: `http://localhost:8080/swagger-ui/index.html`
-5. Autentique: por padr\u00e3o ser\u00e1 criado um usu\u00e1rio admin (`username: admin`, `password: Admin@123`). Estes valores podem ser alterados via vari\u00e1veis `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD` e `APP_ADMIN_ROLE`. Chame `POST /auth/login` com o JSON `{"username":"admin","password":"Admin@123"}` (ou as credenciais que voc\u00ea definir) e use o token retornado no header `Authorization: Bearer <token>` nas demais chamadas.
+5. Login (passo a passo):
+   1. Use as credenciais padrão para login:  
+      - **username:** `admin`  
+      - **password:** `Admin@123`  
+   2. Envie `POST /auth/login` com o corpo `{"username":"admin","password":"Admin@123"}` (ou as credenciais que definiu).
+   3. Copie o token JWT da resposta e envie nas próximas requisições no header `Authorization: Bearer <token>`.
+
+## Permissões por Role
+
+- **ADMIN:** ler, criar, editar e deletar usuários, produtos e clientes.
+- **MANAGER:** ler tudo; criar, editar e deletar produtos; criar e editar clientes.
+- **USER:** ler tudo (todos os GETs).
 
 ---
 
@@ -92,26 +106,3 @@ supermarket/
 ├── pom.xml                    # Gerenciador de dependências Maven
 ├── mvnw / mvnw.cmd            # Wrapper do Maven
 └── README.md                  # Documentação do projeto
-
----
-
-## Segurança (resumo)
-
-- Autenticação via JWT: `/auth/login` gera o token; demais rotas exigem `Authorization: Bearer <token>`.
-- Roles: produtos e usuários só podem ser criados/alterados/deletados por `ROLE_ADMIN`; clientes por `ROLE_ADMIN` ou `ROLE_MANAGER` (delete apenas `ADMIN`).
-- Senhas armazenadas com BCrypt; políticas de senha aplicadas no DTO (mín. 8 chars, maiúscula/minúscula/dígito/especial).
-- Variáveis sensíveis via ambiente: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `JWT_EXPIRATION`, `SWAGGER_ENABLED`.
-```
-
----
-
-## PermissÃµes por Role
-
-- `ADMIN`: CRUD completo de usuÃ¡rios, produtos e clientes.
-- `MANAGER`: criar/atualizar/deletar produtos; criar/atualizar clientes; leitura geral (todos os GETs).
-- `USER`: apenas leitura (GETs) dos recursos expostos.
-
-## Notas
-
-- O pipeline oficial é o GitHub Actions; `deploy.sh` permanece apenas como referência/legado.
-- As instâncias EC2 precisam ter Docker e Docker Compose instalados e configurados para o comando `docker compose pull && docker compose up -d`.
