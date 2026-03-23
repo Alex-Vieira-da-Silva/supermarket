@@ -44,8 +44,8 @@ class ClienteControllerTest {
 
         ClienteDTO dto = new ClienteDTO(
                 "Alex",
-                "12345678901",
-                "81999999999",
+                "123.456.789-01",
+                "(81) 98812-3045",
                 "alex@email.com"
         );
 
@@ -67,8 +67,8 @@ class ClienteControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nome").value("Alex"))
-                .andExpect(jsonPath("$.cpf").value("12345678901"))
-                .andExpect(jsonPath("$.telefone").value("81999999999"))
+                .andExpect(jsonPath("$.cpf").value("123.456.789-01"))
+                .andExpect(jsonPath("$.telefone").value("(81) 98812-3045"))
                 .andExpect(jsonPath("$.email").value("alex@email.com"));
 
         verify(service).criar(any(ClienteDTO.class));

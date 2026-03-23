@@ -28,21 +28,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(NotFoundException ex) {
         Map<String, String> erro = new HashMap<>();
-        erro.put("mensagem", ex.getMessage()); // <-- chave padronizada
+        erro.put("mensagem", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, String>> handleAuthentication(AuthenticationException ex) {
         Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Credenciais inv\u00e1lidas");
+        erro.put("erro", "Credenciais inválidas");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
         Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Erro de autoriza\u00e7\u00e3o, acesso negado!");
+        erro.put("erro", "Erro de autorização, acesso negado!");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
     }
 

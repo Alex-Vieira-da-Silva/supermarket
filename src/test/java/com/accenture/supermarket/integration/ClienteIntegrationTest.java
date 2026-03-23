@@ -32,8 +32,8 @@ class ClienteIntegrationTest {
     void deveCriarCliente() {
         ClienteDTO dto = new ClienteDTO();
         dto.setNome("Alex");
-        dto.setCpf("12345678901");
-        dto.setTelefone("81999999999");
+        dto.setCpf("123.456.789-01");
+        dto.setTelefone("(81) 98812-3045");
         dto.setEmail("alex@email.com");
 
         HttpHeaders headers = new HttpHeaders();
@@ -49,7 +49,7 @@ class ClienteIntegrationTest {
         assertThat(body).isNotNull();
         assertThat(body.getId()).isNotNull();
         assertThat(body.getNome()).isEqualTo("Alex");
-        assertThat(body.getCpf()).isEqualTo("12345678901");
+        assertThat(body.getCpf()).isEqualTo("123.456.789-01");
     }
 
     @Test
