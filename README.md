@@ -99,7 +99,6 @@ supermarket/
 ├── src/                       # Código-fonte Java (Spring Boot)
 ├── target/                    # Binários gerados após o build (Maven)
 ├── .github/workflows/         # Pipelines GitHub Actions (deploy para AWS/ECR/SSM)
-├── deploy.sh                  # Script legado de deploy via SCP/SSH (não usado no pipeline atual)
 ├── docker-compose.yml         # Orquestração principal
 ├── docker-compose-app.yml     # Configuração do container da API
 ├── docker-compose-db.yml      # Configuração do banco de dados
