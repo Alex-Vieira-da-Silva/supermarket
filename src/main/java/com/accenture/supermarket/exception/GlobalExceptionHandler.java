@@ -1,5 +1,6 @@
 package com.accenture.supermarket.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,48 +9,58 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> erros = new HashMap<>();
+    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException ex,
+                                                           HttpServletRequest request) {
+        List<FieldErrorDetail> details = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new FieldErrorDetail(error.getField(), error.getDefaultMessage()))
+                .collect(Collectors.toList());
 
-        ex.getBindingResult().getFieldErrors()
-                .forEach(error -> erros.put(error.getField(), error.getDefaultMessage()));
-
-        return ResponseEntity.badRequest().body(erros);
+        ApiError error = ApiError.validation(details, request.getRequestURI());
+        return ResponseEntity.badRequest().body(error);
     }
 
-    // Handler único para todos os "não encontrado"
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(NotFoundException ex) {
-        Map<String, String> erro = new HashMap<>();
-        erro.put("mensagem", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        ApiError error = ApiError.of(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiError> handleDuplicate(DuplicateResourceException ex, HttpServletRequest request) {
+        ApiError error = ApiError.of(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Map<String, String>> handleAuthentication(AuthenticationException ex) {
-        Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Credenciais inválidas");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
+    public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex,
+                                                         HttpServletRequest request) {
+        ApiError error = ApiError.of(HttpStatus.UNAUTHORIZED, "Credenciais inválidas", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
-        Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Erro de autorização, acesso negado!");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex,
+                                                       HttpServletRequest request) {
+        ApiError error = ApiError.of(HttpStatus.FORBIDDEN, "Acesso negado", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
-        Map<String, String> erro = new HashMap<>();
-        erro.put("erro", "Erro interno no servidor");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+    public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest request) {
+        ApiError error = ApiError.of(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Erro interno no servidor",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

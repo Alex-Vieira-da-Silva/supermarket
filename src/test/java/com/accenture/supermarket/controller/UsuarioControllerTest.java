@@ -3,8 +3,8 @@ package com.accenture.supermarket.controller;
 import com.accenture.supermarket.dto.UsuarioDTO;
 import com.accenture.supermarket.exception.NotFoundException;
 import com.accenture.supermarket.model.Usuario;
-import com.accenture.supermarket.service.UsuarioService;
 import com.accenture.supermarket.security.JwtAuthenticationFilter;
+import com.accenture.supermarket.service.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,15 +14,24 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UsuarioController.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class})
@@ -45,14 +54,15 @@ class UsuarioControllerTest {
     @DisplayName("Deve listar todos os usuários")
     void deveListarTodos() throws Exception {
         Usuario usuario = new Usuario(1L, "alex", "Senha@123", "ADMIN");
+        Page<Usuario> page = new PageImpl<>(List.of(usuario));
 
-        Mockito.when(service.listarTodos()).thenReturn(List.of(usuario));
+        Mockito.when(service.listar(Mockito.nullable(String.class), any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/usuarios"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].username").value("alex"))
-                .andExpect(jsonPath("$[0].role").value("ADMIN"));
+                .andExpect(jsonPath("$.content[0].id").value(1L))
+                .andExpect(jsonPath("$.content[0].username").value("alex"))
+                .andExpect(jsonPath("$.content[0].role").value("ADMIN"));
     }
 
     @Test
@@ -77,7 +87,8 @@ class UsuarioControllerTest {
 
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+                .andExpect(jsonPath("$.message").value("Usuário não encontrado"))
+                .andExpect(jsonPath("$.status").value(404));
     }
 
     @Test
@@ -102,7 +113,6 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
-
     @Test
     @DisplayName("Deve retornar erro de validação ao criar usuário inválido")
     void deveRetornarErroDeValidacaoAoCriar() throws Exception {
@@ -111,7 +121,8 @@ class UsuarioControllerTest {
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Falha na validação dos dados"));
     }
 
     @Test

@@ -5,9 +5,10 @@ import com.accenture.supermarket.exception.ProdutoNaoEncontradoException;
 import com.accenture.supermarket.model.Produto;
 import com.accenture.supermarket.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -15,14 +16,16 @@ public class ProdutoService {
 
     private final ProdutoRepository repository;
 
-    public List<Produto> listarTodos() {
-        return repository.findAll();
+    public Page<Produto> listar(String nome, Pageable pageable) {
+        if (StringUtils.hasText(nome)) {
+            return repository.findByNomeContainingIgnoreCase(nome, pageable);
+        }
+        return repository.findAll(pageable);
     }
 
     public Produto buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() ->
-                        new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id));
+                .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
     }
 
     public Produto criar(ProdutoDTO dto) {
@@ -42,10 +45,7 @@ public class ProdutoService {
     }
 
     public void deletar(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ProdutoNaoEncontradoException("Produto não encontrado com ID: " + id);
-        }
-
-        repository.deleteById(id);
+        Produto produto = buscarPorId(id);
+        repository.delete(produto);
     }
 }

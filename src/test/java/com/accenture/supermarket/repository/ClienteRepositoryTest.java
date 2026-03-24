@@ -27,8 +27,8 @@ class ClienteRepositoryTest {
         assertAll(
                 () -> assertNotNull(salvo.getId()),
                 () -> assertEquals("Alex", salvo.getNome()),
-                () -> assertEquals("12345678901", salvo.getCpf()),
-                () -> assertEquals("81999999999", salvo.getTelefone()),
+                () -> assertEquals("123.456.789-01", salvo.getCpf()),
+                () -> assertEquals("(81)99999-9999", salvo.getTelefone()),
                 () -> assertEquals("alex@email", salvo.getEmail())
         );
     }
@@ -43,7 +43,9 @@ class ClienteRepositoryTest {
 
         assertAll(
                 () -> assertTrue(encontrado.isPresent()),
-                () -> assertEquals("Alex", encontrado.get().getNome())
+                () -> assertEquals("Alex", encontrado.get().getNome()),
+                () -> assertEquals("123.456.789-01", encontrado.get().getCpf()),
+                () -> assertEquals("(81)99999-9999", encontrado.get().getTelefone())
         );
     }
 

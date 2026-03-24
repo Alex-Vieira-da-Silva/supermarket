@@ -1,9 +1,20 @@
 package com.accenture.supermarket.model;
 
 import com.accenture.supermarket.dto.ProdutoDTO;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "produtos")
@@ -34,5 +45,4 @@ public class Produto {
         this.preco = dto.getPreco();
         this.quantidade = dto.getQuantidade();
     }
-
 }

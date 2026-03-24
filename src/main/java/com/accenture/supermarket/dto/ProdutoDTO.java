@@ -1,6 +1,10 @@
 package com.accenture.supermarket.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -19,10 +23,10 @@ public class ProdutoDTO {
     private Integer quantidade;
 
     public ProdutoDTO() {}
+
     public ProdutoDTO(String nome, Double preco, Integer quantidade) {
         this.nome = nome;
         this.preco = preco;
         this.quantidade = quantidade;
     }
-
 }

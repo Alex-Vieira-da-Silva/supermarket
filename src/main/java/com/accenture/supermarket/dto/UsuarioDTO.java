@@ -13,10 +13,10 @@ public class UsuarioDTO {
     @Size(min = 3, max = 50, message = "Username deve ter entre 3 e 50 caracteres")
     private String username;
 
-    @NotBlank(message = "Password é obrigatório")
-    @Size(min = 8, message = "Password deve ter no mínimo 8 caracteres")
+    @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 8, message = "Senha deve ter no mínimo 8 caracteres")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*#?&._-]).+$",
-            message = "Password deve conter maiúscula, minúscula, dígito e caractere especial")
+            message = "Senha deve conter maiúscula, minúscula, dígito e caractere especial")
     @ToString.Exclude
     private String password;
 

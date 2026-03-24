@@ -1,7 +1,8 @@
 package com.accenture.supermarket.integration;
 
+import com.accenture.supermarket.dto.PageResponse;
 import com.accenture.supermarket.dto.UsuarioDTO;
-import com.accenture.supermarket.model.Usuario;
+import com.accenture.supermarket.dto.UsuarioResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,29 +38,30 @@ class UsuarioIntegrationTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UsuarioDTO> request = new HttpEntity<>(dto, headers);
 
-        ResponseEntity<Usuario> response =
-                client.postForEntity("/usuarios", request, Usuario.class);
+        ResponseEntity<UsuarioResponse> response =
+                client.postForEntity("/usuarios", request, UsuarioResponse.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Usuario body = response.getBody();
+        UsuarioResponse body = response.getBody();
         assertThat(body).isNotNull();
-        assertThat(body.getId()).isNotNull();
-        assertThat(body.getUsername()).isEqualTo("alex");
-        assertThat(body.getRole()).isEqualTo("ADMIN");
+        assertThat(body.id()).isNotNull();
+        assertThat(body.username()).isEqualTo("alex");
+        assertThat(body.role()).isEqualTo("ADMIN");
     }
 
     @Test
     @DisplayName("Deve listar usuários via API")
     void deveListarUsuarios() {
-        ResponseEntity<List<Usuario>> response = client.exchange(
+        ResponseEntity<PageResponse<UsuarioResponse>> response = client.exchange(
                 "/usuarios",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Usuario>>() {}
+                new ParameterizedTypeReference<PageResponse<UsuarioResponse>>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().content()).isNotNull();
     }
 }

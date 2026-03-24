@@ -10,12 +10,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProdutoServiceTest {
@@ -26,16 +36,27 @@ class ProdutoServiceTest {
     @InjectMocks
     private ProdutoService service;
 
-
     @Test
     @DisplayName("Deve listar todos os produtos")
     void deveListarTodos() {
-        when(repository.findAll()).thenReturn(List.of(new Produto()));
+        Page<Produto> page = new PageImpl<>(List.of(new Produto()));
+        when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<Produto> produtos = service.listarTodos();
+        Page<Produto> produtos = service.listar(null, Pageable.unpaged());
 
         assertFalse(produtos.isEmpty());
-        verify(repository).findAll();
+        verify(repository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar produtos pelo nome")
+    void deveFiltrarPorNome() {
+        Page<Produto> page = new PageImpl<>(List.of(new Produto()));
+        when(repository.findByNomeContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(page);
+
+        service.listar("arroz", Pageable.unpaged());
+
+        verify(repository).findByNomeContainingIgnoreCase("arroz", Pageable.unpaged());
     }
 
     @Test
@@ -101,20 +122,22 @@ class ProdutoServiceTest {
     @Test
     @DisplayName("Deve deletar produto existente")
     void deveDeletarProduto() {
-        when(repository.existsById(1L)).thenReturn(true);
-        doNothing().when(repository).deleteById(1L);
+        Produto produto = new Produto(1L, "Arroz", 10.0, 5);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(produto));
+        doNothing().when(repository).delete(produto);
 
         service.deletar(1L);
 
-        verify(repository).deleteById(1L);
+        verify(repository).delete(produto);
     }
 
     @Test
     @DisplayName("Deve lançar erro ao tentar deletar produto inexistente")
     void deveLancarErroAoDeletarQuandoIdNaoExiste() {
-        when(repository.existsById(1L)).thenReturn(false);
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ProdutoNaoEncontradoException.class, () -> service.deletar(1L));
-        verify(repository).existsById(1L);
+        verify(repository).findById(1L);
     }
 }

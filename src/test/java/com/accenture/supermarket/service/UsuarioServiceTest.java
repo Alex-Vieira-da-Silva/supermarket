@@ -10,13 +10,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
@@ -30,16 +40,27 @@ class UsuarioServiceTest {
     @InjectMocks
     private UsuarioService service;
 
-
     @Test
-    @DisplayName("Deve listar  todos os usuários")
+    @DisplayName("Deve listar todos os usuários")
     void deveListarTodos() {
-        when(repository.findAll()).thenReturn(List.of(new Usuario()));
+        Page<Usuario> page = new PageImpl<>(List.of(new Usuario()));
+        when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<Usuario> usuarios = service.listarTodos();
+        Page<Usuario> usuarios = service.listar(null, Pageable.unpaged());
 
         assertFalse(usuarios.isEmpty());
-        verify(repository).findAll();
+        verify(repository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("Deve filtrar usuários por username")
+    void deveFiltrarPorUsername() {
+        Page<Usuario> page = new PageImpl<>(List.of(new Usuario()));
+        when(repository.findByUsernameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(page);
+
+        service.listar("alex", Pageable.unpaged());
+
+        verify(repository).findByUsernameContainingIgnoreCase("alex", Pageable.unpaged());
     }
 
     @Test
@@ -115,21 +136,22 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve deletar um usuário existente")
     void deveDeletarUsuario() {
-        when(repository.existsById(1L)).thenReturn(true);
-        doNothing().when(repository).deleteById(1L);
+        Usuario usuario = new Usuario(1L, "alex", "123", "ADMIN");
+
+        when(repository.findById(1L)).thenReturn(Optional.of(usuario));
+        doNothing().when(repository).delete(usuario);
 
         service.deletar(1L);
 
-        verify(repository).existsById(1L);
-        verify(repository).deleteById(1L);
+        verify(repository).delete(usuario);
     }
 
     @Test
     @DisplayName("Deve lançar erro ao tentar deletar usuário inexistente")
     void deveLancarErroAoDeletarQuandoIdNaoExiste() {
-        when(repository.existsById(1L)).thenReturn(false);
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(UsuarioNaoEncontradoException.class, () -> service.deletar(1L));
-        verify(repository).existsById(1L);
+        verify(repository).findById(1L);
     }
 }

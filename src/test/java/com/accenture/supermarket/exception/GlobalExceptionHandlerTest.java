@@ -17,12 +17,15 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {
         ClienteController.class,
@@ -50,7 +53,6 @@ class GlobalExceptionHandlerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    // 400 - Validação
     @Test
     @DisplayName("Deve retornar 400 quando a validação falhar")
     void deveRetornar400QuandoValidacaoFalhar() throws Exception {
@@ -60,10 +62,10 @@ class GlobalExceptionHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.nome").exists());
+                .andExpect(jsonPath("$.message").value("Falha na validação dos dados"))
+                .andExpect(jsonPath("$.details[0].field").value("nome"));
     }
 
-    // 404 - Cliente
     @Test
     @DisplayName("Deve retornar 404 quando ClienteNaoEncontradoException for lançada")
     void deveRetornar404ClienteNaoEncontrado() throws Exception {
@@ -72,10 +74,10 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/clientes/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensagem").value("Cliente não encontrado"));
+                .andExpect(jsonPath("$.message").value("Cliente não encontrado"))
+                .andExpect(jsonPath("$.status").value(404));
     }
 
-    // 404 - Produto
     @Test
     @DisplayName("Deve retornar 404 quando ProdutoNaoEncontradoException for lançada")
     void deveRetornar404ProdutoNaoEncontrado() throws Exception {
@@ -84,10 +86,10 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/produtos/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensagem").value("Produto não encontrado"));
+                .andExpect(jsonPath("$.message").value("Produto não encontrado"))
+                .andExpect(jsonPath("$.status").value(404));
     }
 
-    // 404 - Usuário
     @Test
     @DisplayName("Deve retornar 404 quando UsuarioNaoEncontradoException for lançada")
     void deveRetornar404UsuarioNaoEncontrado() throws Exception {
@@ -96,30 +98,31 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/usuarios/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+                .andExpect(jsonPath("$.message").value("Usuário não encontrado"))
+                .andExpect(jsonPath("$.status").value(404));
     }
 
-    // 401 - Autenticação
     @Test
     @DisplayName("Deve retornar 401 quando a autenticação falhar")
     void deveRetornar401QuandoAutenticacaoFalhar() throws Exception {
-        Mockito.when(clienteService.listarTodos())
+        Mockito.when(clienteService.listar(Mockito.nullable(String.class), Mockito.nullable(String.class), Mockito.any(Pageable.class)))
                 .thenThrow(new BadCredentialsException("Bad credentials"));
 
         mockMvc.perform(get("/clientes"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.erro").value("Credenciais inválidas"));
+                .andExpect(jsonPath("$.message").value("Credenciais inválidas"))
+                .andExpect(jsonPath("$.status").value(401));
     }
 
-    // 500 - Erro genérico
     @Test
     @DisplayName("Deve retornar 500 quando ocorrer erro genérico")
     void deveRetornar500QuandoErroGenerico() throws Exception {
-        Mockito.when(clienteService.listarTodos())
+        Mockito.when(clienteService.listar(Mockito.nullable(String.class), Mockito.nullable(String.class), Mockito.any(Pageable.class)))
                 .thenThrow(new RuntimeException("Erro inesperado"));
 
         mockMvc.perform(get("/clientes"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.erro").value("Erro interno no servidor"));
+                .andExpect(jsonPath("$.message").value("Erro interno no servidor"))
+                .andExpect(jsonPath("$.status").value(500));
     }
 }
