@@ -44,7 +44,7 @@ public class Cliente {
 
     @Pattern(
             regexp = "^(\\+?\\d{10,15}|\\(\\d{2}\\)\\s?\\d{4,5}-\\d{4})?$",
-            message = "Telefone deve estar no formato (DD)00000-0000"
+            message = "Telefone deve estar no formato (DD)00000-0000 ou conter de 10 a 15 dígitos"
     )
     private String telefone;
 
@@ -53,20 +53,38 @@ public class Cliente {
 
     @PrePersist
     @PreUpdate
-    private void aplicarMascaraCpf() {
-        if (!StringUtils.hasText(this.cpf)) {
-            return;
+    private void aplicarFormatacoes() {
+        this.cpf = formatCpf(this.cpf);
+        this.telefone = formatTelefone(this.telefone);
+    }
+
+    private String formatCpf(String cpf) {
+        if (!StringUtils.hasText(cpf)) {
+            return cpf;
         }
-        String digits = this.cpf.replaceAll("\\D", "");
+        String digits = cpf.replaceAll("\\D", "");
         if (digits.length() != 11) {
-            this.cpf = this.cpf.trim();
-            return;
+            return cpf.trim();
         }
-        this.cpf = String.format("%s.%s.%s-%s",
+        return String.format("%s.%s.%s-%s",
                 digits.substring(0, 3),
                 digits.substring(3, 6),
                 digits.substring(6, 9),
                 digits.substring(9));
+    }
+
+    private String formatTelefone(String telefone) {
+        if (!StringUtils.hasText(telefone)) {
+            return telefone;
+        }
+        String digits = telefone.replaceAll("\\D", "");
+        if (digits.length() != 11) {
+            return telefone.trim();
+        }
+        return String.format("(%s)%s-%s",
+                digits.substring(0, 2),
+                digits.substring(2, 7),
+                digits.substring(7));
     }
 
     public void atualizar(ClienteDTO dto) {
