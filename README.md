@@ -27,6 +27,7 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 ---
 
 ## Monitoramento e logs
+- NGINX (instância EC2): access/error logs ficam no host; recomenda-se enviá-los ao CloudWatch Logs (ex.: grupo `supermarket-nginx`) via CloudWatch Agent com permissões de Logs na role da instância.
 - App: `docker-compose-app.yml` define o driver `awslogs` com `awslogs-group=supermarket-app` e stream `app-${HOSTNAME}`.
 - Banco: `docker-compose-db.yml` envia logs para `awslogs-group=supermarket-db` com stream `db-${HOSTNAME}`.
 - Para rodar nas EC2 ou localmente com o driver `awslogs`, as credenciais/role do host devem ter permissão em CloudWatch Logs na região `us-east-1`.
