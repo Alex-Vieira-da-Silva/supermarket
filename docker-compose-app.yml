@@ -13,11 +13,20 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: us-east-1
+        awslogs-group: supermarket-app
+        awslogs-stream: app-${HOSTNAME}
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
+
     restart: always
     networks:
       - app_network

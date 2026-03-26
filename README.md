@@ -10,6 +10,8 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 - Segurança com JWT, roles ADMIN/MANAGER/USER, permissões por método e seed automático do usuário admin.
 - Tratamento unificado de erros (`ApiError`) e mensagens de validação detalhadas.
 - Docker Compose separado para app e banco; imagem de produção publicada no ECR.
+- NGINX em instância EC2 dedicada atuando como load balancer/reverse proxy para as duas instâncias da API.
+- Logs centralizados no AWS CloudWatch Logs via driver `awslogs` para app e banco.
 - Pipeline GitHub Actions: build/test Maven, push para ECR e deploy via SSM em duas EC2 atrás do NGINX load balancer.
 
 ---
@@ -18,8 +20,17 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 - VPC isolada com sub-redes para aplicação e banco.
 - Duas instâncias EC2 de aplicação (APP-1 e APP-2) executando `docker-compose-app.yml`.
 - Instância EC2 dedicada para MySQL (container definido em `docker-compose-db.yml`) acessível apenas pela VPC.
-- NGINX como load balancer e reverse proxy (ver `nginx.conf`), expondo Swagger/healthcheck.
+- Instância EC2 dedicada rodando NGINX como load balancer e reverse proxy (ver `nginx.conf`), expondo Swagger/healthcheck.
 - ECR armazena a imagem `supermarket-app`; EC2s fazem `docker compose pull && up -d` durante o deploy.
+- Logs são enviados para o CloudWatch Logs (grupos `supermarket-app` e `supermarket-db`) usando o driver `awslogs`; a instância precisa ter role/perfil com permissão `logs:CreateLogGroup`, `logs:CreateLogStream` e `logs:PutLogEvents`.
+
+---
+
+## Monitoramento e logs
+- App: `docker-compose-app.yml` define o driver `awslogs` com `awslogs-group=supermarket-app` e stream `app-${HOSTNAME}`.
+- Banco: `docker-compose-db.yml` envia logs para `awslogs-group=supermarket-db` com stream `db-${HOSTNAME}`.
+- Para rodar nas EC2 ou localmente com o driver `awslogs`, as credenciais/role do host devem ter permissão em CloudWatch Logs na região `us-east-1`.
+- Visualização: abra o CloudWatch Logs no console AWS e filtre pelos grupos acima; cada container gera um stream por host.
 
 ---
 
@@ -28,6 +39,8 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 - JWT para autenticação stateless.
 - MySQL 8.0 (H2 em memória por padrão no profile local).
 - Docker e Docker Compose.
+- NGINX em EC2 como load balancer/reverse proxy.
+- AWS CloudWatch Logs para centralização de logs de app e banco.
 - GitHub Actions + AWS SSM + ECR.
 
 ---
@@ -102,6 +115,7 @@ Opção 2 — Docker Compose com MySQL
    `set DB_USER=appuser`  
    `set DB_PASSWORD=app123`  
    `set JWT_SECRET=<chave-secreta>`  
+   *(se quiser enviar logs para CloudWatch em ambiente local, configure credenciais AWS com permissão em Logs e mantenha a região `us-east-1`)*  
 3. `docker compose -f docker-compose-app.yml up -d`
 
 Opção 3 — Compose para produção (imagem do ECR e healthcheck)  
@@ -149,3 +163,4 @@ supermarket/
 ## Links úteis
 - Swagger em produção: http://3.224.211.157/swagger-ui/index.html#/
 - Healthcheck: http://3.224.211.157/actuator/health
+- Ambos os links passam pelo NGINX na instância EC2 que faz o load balancing entre APP-1 e APP-2 (ver `nginx.conf`).
