@@ -2,6 +2,7 @@ package com.accenture.supermarket.service;
 
 import com.accenture.supermarket.dto.ProdutoDTO;
 import com.accenture.supermarket.exception.ProdutoNaoEncontradoException;
+import com.accenture.supermarket.mapper.ProdutoMapper;
 import com.accenture.supermarket.model.Produto;
 import com.accenture.supermarket.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,18 +30,13 @@ public class ProdutoService {
     }
 
     public Produto criar(ProdutoDTO dto) {
-        Produto produto = Produto.builder()
-                .nome(dto.getNome())
-                .preco(dto.getPreco())
-                .quantidade(dto.getQuantidade())
-                .build();
-
+        Produto produto = ProdutoMapper.toEntity(dto);
         return repository.save(produto);
     }
 
     public Produto atualizar(Long id, ProdutoDTO dto) {
         Produto produto = buscarPorId(id);
-        produto.atualizar(dto);
+        ProdutoMapper.updateEntity(produto, dto);
         return repository.save(produto);
     }
 

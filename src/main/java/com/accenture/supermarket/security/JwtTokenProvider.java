@@ -1,6 +1,9 @@
 package com.accenture.supermarket.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +17,7 @@ public class JwtTokenProvider {
 
     private final SecretKey signingKey;
     private final long expirationMillis;
+    private final JwtParser jwtParser;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
@@ -21,6 +25,9 @@ public class JwtTokenProvider {
 
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMillis = expirationMillis;
+        this.jwtParser = Jwts.parser()
+                .verifyWith(signingKey)
+                .build();
     }
 
     public String generateToken(String username) {
@@ -42,19 +49,23 @@ public class JwtTokenProvider {
     public boolean isValid(String token) {
         try {
             return !isExpired(token);
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     public boolean isExpired(String token) {
-        return parseClaims(token).getExpiration().before(new Date());
+        try {
+            return parseClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException ex) {
+            return true;
+        } catch (JwtException | IllegalArgumentException ex) {
+            return true;
+        }
     }
 
     private io.jsonwebtoken.Claims parseClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey)
-                .build()
+        return jwtParser
                 .parseSignedClaims(token)
                 .getPayload();
     }

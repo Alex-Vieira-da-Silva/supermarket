@@ -3,6 +3,7 @@ package com.accenture.supermarket.service;
 import com.accenture.supermarket.dto.UsuarioDTO;
 import com.accenture.supermarket.exception.DuplicateResourceException;
 import com.accenture.supermarket.exception.UsuarioNaoEncontradoException;
+import com.accenture.supermarket.mapper.UsuarioMapper;
 import com.accenture.supermarket.model.Usuario;
 import com.accenture.supermarket.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,7 @@ public class UsuarioService {
         if (repository.existsByUsername(dto.getUsername())) {
             throw new DuplicateResourceException("Username já cadastrado");
         }
-        Usuario usuario = Usuario.builder()
-                .username(dto.getUsername())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role(dto.getRole())
-                .build();
-
-        return repository.save(usuario);
+        return repository.save(UsuarioMapper.toEntity(dto, passwordEncoder));
     }
 
     public Usuario atualizar(Long id, UsuarioDTO dto) {
@@ -49,7 +44,7 @@ public class UsuarioService {
         if (repository.existsByUsernameAndIdNot(dto.getUsername(), id)) {
             throw new DuplicateResourceException("Username já cadastrado");
         }
-        usuario.atualizar(dto, passwordEncoder);
+        UsuarioMapper.updateEntity(usuario, dto, passwordEncoder);
         return repository.save(usuario);
     }
 

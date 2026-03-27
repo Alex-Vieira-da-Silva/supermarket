@@ -17,7 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.util.StringUtils;
+import com.accenture.supermarket.util.CpfUtils;
+import com.accenture.supermarket.util.PhoneUtils;
 
 @Entity
 @Table(name = "clientes")
@@ -54,43 +55,14 @@ public class Cliente {
     @PrePersist
     @PreUpdate
     private void aplicarFormatacoes() {
-        this.cpf = formatCpf(this.cpf);
-        this.telefone = formatTelefone(this.telefone);
-    }
-
-    private String formatCpf(String cpf) {
-        if (!StringUtils.hasText(cpf)) {
-            return cpf;
-        }
-        String digits = cpf.replaceAll("\\D", "");
-        if (digits.length() != 11) {
-            return cpf.trim();
-        }
-        return String.format("%s.%s.%s-%s",
-                digits.substring(0, 3),
-                digits.substring(3, 6),
-                digits.substring(6, 9),
-                digits.substring(9));
-    }
-
-    private String formatTelefone(String telefone) {
-        if (!StringUtils.hasText(telefone)) {
-            return telefone;
-        }
-        String digits = telefone.replaceAll("\\D", "");
-        if (digits.length() != 11) {
-            return telefone.trim();
-        }
-        return String.format("(%s)%s-%s",
-                digits.substring(0, 2),
-                digits.substring(2, 7),
-                digits.substring(7));
+        this.cpf = CpfUtils.format(this.cpf);
+        this.telefone = PhoneUtils.format(this.telefone);
     }
 
     public void atualizar(ClienteDTO dto) {
         this.nome = dto.getNome();
-        this.cpf = dto.getCpf();
-        this.telefone = dto.getTelefone();
+        this.cpf = CpfUtils.format(dto.getCpf());
+        this.telefone = PhoneUtils.format(dto.getTelefone());
         this.email = dto.getEmail();
     }
 }
