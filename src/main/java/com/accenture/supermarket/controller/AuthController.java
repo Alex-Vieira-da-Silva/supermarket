@@ -1,7 +1,7 @@
 package com.accenture.supermarket.controller;
 
-import com.accenture.supermarket.dto.AuthRequest;
-import com.accenture.supermarket.dto.AuthResponse;
+import com.accenture.supermarket.dto.request.AuthRequest;
+import com.accenture.supermarket.dto.response.AuthResponse;
 import com.accenture.supermarket.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

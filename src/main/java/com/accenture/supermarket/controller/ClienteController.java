@@ -1,8 +1,8 @@
 package com.accenture.supermarket.controller;
 
 import com.accenture.supermarket.dto.ClienteDTO;
-import com.accenture.supermarket.dto.ClienteResponse;
-import com.accenture.supermarket.dto.PageResponse;
+import com.accenture.supermarket.dto.response.ClienteResponse;
+import com.accenture.supermarket.dto.response.PageResponse;
 import com.accenture.supermarket.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

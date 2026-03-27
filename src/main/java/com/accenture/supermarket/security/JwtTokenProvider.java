@@ -1,20 +1,18 @@
 package com.accenture.supermarket.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private final Key signingKey;
+    private final SecretKey signingKey;
     private final long expirationMillis;
 
     public JwtTokenProvider(
@@ -33,7 +31,7 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .signWith(signingKey)
                 .compact();
     }
 
@@ -53,11 +51,11 @@ public class JwtTokenProvider {
         return parseClaims(token).getExpiration().before(new Date());
     }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
+    private io.jsonwebtoken.Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(signingKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

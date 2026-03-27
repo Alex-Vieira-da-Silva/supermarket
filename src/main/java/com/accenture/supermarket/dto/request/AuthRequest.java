@@ -1,4 +1,4 @@
-package com.accenture.supermarket.dto;
+package com.accenture.supermarket.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.accenture.supermarket.dto;
+package com.accenture.supermarket.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

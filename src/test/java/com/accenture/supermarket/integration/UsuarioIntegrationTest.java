@@ -1,8 +1,8 @@
 package com.accenture.supermarket.integration;
 
-import com.accenture.supermarket.dto.PageResponse;
+import com.accenture.supermarket.dto.response.PageResponse;
 import com.accenture.supermarket.dto.UsuarioDTO;
-import com.accenture.supermarket.dto.UsuarioResponse;
+import com.accenture.supermarket.dto.response.UsuarioResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -36,7 +36,7 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 ---
 
 ## Tecnologias
-- Java 17, Spring Boot, Spring Security, Spring Data JPA.
+- Java 21, Spring Boot, Spring Security, Spring Data JPA.
 - JWT para autenticação stateless.
 - MySQL 8.0 (H2 em memória por padrão no profile local).
 - Docker e Docker Compose.
@@ -150,7 +150,7 @@ supermarket/
 |- docker-compose.yml         # Stack de produção (imagem do ECR + healthcheck)
 |- docker-compose-app.yml     # Serviço da API para EC2/app hosts
 |- docker-compose-db.yml      # MySQL com volume e healthcheck
-|- Dockerfile                 # Build da imagem (Amazon Corretto 17)
+|- Dockerfile                 # Build da imagem (Amazon Corretto 21)
 |- nginx.conf                 # Configuração do load balancer/reverse proxy
 |- pom.xml                    # Dependências Maven
 |- mvnw / mvnw.cmd            # Wrapper do Maven

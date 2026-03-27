@@ -1,4 +1,4 @@
-package com.accenture.supermarket.dto;
+package com.accenture.supermarket.dto.response;
 
 import org.springframework.data.domain.Page;
 
