@@ -1,6 +1,6 @@
 # Supermarket – Arquitetura AWS com Docker, EC2 e Load Balancer
 
-API Spring Boot para gestão de supermercado (produtos, clientes e usuários), com autenticação JWT, validação, paginação e deploy automatizado em AWS.
+API Spring Boot para gestão de supermercado (produtos, clientes e usuários), com autenticação JWT, validação, paginação e deploy automatizado em AWS. Imagens Docker armazenadas no Amazon ECR para os deploys.
 
 ---
 
@@ -145,11 +145,34 @@ Workflow em `.github/workflows/deploy.yml`:
 ## Estrutura de diretórios
 ```
 supermarket/
-|- src/                       # Código-fonte Java (controllers, services, DTOs, security)
+|- src/
+|  |- main/java/com/accenture/supermarket/
+|  |  |- config/
+|  |  |- controller/
+|  |  |- dto/
+|  |  |  |- request/
+|  |  |  |- response/
+|  |  |- exception/
+|  |  |- mapper/
+|  |  |- model/
+|  |  |- repository/
+|  |  |- security/
+|  |  |- service/
+|  |  |- util/
+|  |- test/java/com/accenture/supermarket/
+|  |  |- controller/
+|  |  |- dto/
+|  |  |- exception/
+|  |  |- integration/
+|  |  |- repository/
+|  |  |- security/
+|  |  |- service/
+|  |  |- util/
 |- .github/workflows/         # Pipelines GitHub Actions
 |- docker-compose.yml         # Stack de produção (imagem do ECR + healthcheck)
 |- docker-compose-app.yml     # Serviço da API para EC2/app hosts
 |- docker-compose-db.yml      # MySQL com volume e healthcheck
+|- .env                       # Variáveis de ambiente usadas no compose de produção
 |- Dockerfile                 # Build da imagem (Amazon Corretto 21)
 |- nginx.conf                 # Configuração do load balancer/reverse proxy
 |- pom.xml                    # Dependências Maven
