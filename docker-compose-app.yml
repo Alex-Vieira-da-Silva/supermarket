@@ -1,7 +1,7 @@
 services:
   supermarket:
-    image: ${ECR_IMAGE:-123456789012.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:v2.3}
-    container_name: supermarket-v2.3
+    image: ${ECR_IMAGE:-123456789012.dkr.ecr.us-east-1.amazonaws.com/supermarket-app:v2.4}
+    container_name: supermarket-v2.4
     pull_policy: always
     ports:
       - "8080:8080"
