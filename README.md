@@ -56,7 +56,7 @@ API Spring Boot para gestão de supermercado (produtos, clientes e usuários), c
 
 ## Fluxo de autenticação
 1. Abrir `http://localhost:8080/swagger-ui/index.html`.
-2. Logar em `POST /auth/login` usando as credenciais padrão `admin` / `Admin@123` (ou valores de `APP_ADMIN_USERNAME` e `APP_ADMIN_PASSWORD`).
+2. Logar em `POST /auth/login` usando as credenciais padrão `admin` / `Super@123` (ou valores de `APP_ADMIN_USERNAME` e `APP_ADMIN_PASSWORD`).
 3. Enviar o token JWT no header `Authorization: Bearer <token>` nas próximas requisições.
 
 ---

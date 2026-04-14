@@ -23,7 +23,7 @@ public class AdminUserInitializer {
     @Bean
     CommandLineRunner ensureDefaultAdmin(
             @Value("${app.admin.username:admin}") String username,
-            @Value("${app.admin.password:Admin@123}") String password,
+            @Value("${app.admin.password:Super@123}") String password,
             @Value("${app.admin.role:ADMIN}") String role
     ) {
         return args -> usuarioRepository.findByUsername(username).ifPresentOrElse(
